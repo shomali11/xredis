@@ -23,6 +23,7 @@ const (
 	addressFormat = "%s:%d"
 )
 
+// Options contains redis options
 type Options struct {
 	host                  string
 	port                  int
@@ -41,10 +42,12 @@ type Options struct {
 	testOnBorrowPeriod    time.Duration
 }
 
+// Address returns address
 func (o *Options) Address() string {
 	return fmt.Sprintf(addressFormat, o.Host(), 6379)
 }
 
+// Host returns host
 func (o *Options) Host() string {
 	if len(o.host) == 0 {
 		return defaultHost
@@ -52,6 +55,7 @@ func (o *Options) Host() string {
 	return o.host
 }
 
+// Port returns port
 func (o *Options) Port() int {
 	if o.port <= 0 {
 		return defaultPort
@@ -59,6 +63,7 @@ func (o *Options) Port() int {
 	return o.port
 }
 
+// Password returns password
 func (o *Options) Password() string {
 	if len(o.password) == 0 {
 		return defaultPassword
@@ -66,6 +71,7 @@ func (o *Options) Password() string {
 	return o.password
 }
 
+// Database returns database
 func (o *Options) Database() int {
 	if o.database < 0 {
 		return defaultDatabase
@@ -73,6 +79,7 @@ func (o *Options) Database() int {
 	return o.database
 }
 
+// Network returns network
 func (o *Options) Network() string {
 	if len(o.network) == 0 {
 		return defaultNetwork
@@ -80,6 +87,7 @@ func (o *Options) Network() string {
 	return o.network
 }
 
+// ConnectTimeout returns connect timeout
 func (o *Options) ConnectTimeout() time.Duration {
 	if o.connectTimeout < 0 {
 		return defaultConnectTimeout
@@ -87,6 +95,7 @@ func (o *Options) ConnectTimeout() time.Duration {
 	return o.connectTimeout
 }
 
+// WriteTimeout returns write timeout
 func (o *Options) WriteTimeout() time.Duration {
 	if o.connectTimeout < 0 {
 		return defaultWriteTimeout
@@ -94,6 +103,7 @@ func (o *Options) WriteTimeout() time.Duration {
 	return o.connectTimeout
 }
 
+// ReadTimeout returns read timeout
 func (o *Options) ReadTimeout() time.Duration {
 	if o.connectTimeout < 0 {
 		return defaultReadTimeout
@@ -101,6 +111,7 @@ func (o *Options) ReadTimeout() time.Duration {
 	return o.connectTimeout
 }
 
+// ConnectionIdleTimeout returns connection idle timeout
 func (o *Options) ConnectionIdleTimeout() time.Duration {
 	if o.connectionIdleTimeout < 0 {
 		return defaultConnectionIdleTimeout
@@ -108,6 +119,7 @@ func (o *Options) ConnectionIdleTimeout() time.Duration {
 	return o.connectionIdleTimeout
 }
 
+// ConnectionMaxIdle returns connection max idle
 func (o *Options) ConnectionMaxIdle() int {
 	if o.connectionMaxIdle < 0 {
 		return defaultConnectionMaxIdle
@@ -115,6 +127,7 @@ func (o *Options) ConnectionMaxIdle() int {
 	return o.connectionMaxIdle
 }
 
+// ConnectionMaxActive returns connection max active
 func (o *Options) ConnectionMaxActive() int {
 	if o.connectionMaxActive < 0 {
 		return defaultConnectionMaxActive
@@ -122,18 +135,22 @@ func (o *Options) ConnectionMaxActive() int {
 	return o.connectionMaxActive
 }
 
+// ConnectionWait returns connection wait
 func (o *Options) ConnectionWait() bool {
 	return o.connectionWait
 }
 
+// TlsConfig returns tls config
 func (o *Options) TlsConfig() *tls.Config {
 	return o.tlsConfig
 }
 
+// TlsSkipVerify returns tls skip verify
 func (o *Options) TlsSkipVerify() bool {
 	return o.tlsSkipVerify
 }
 
+// TestOnBorrowPeriod return test on borrow period
 func (o *Options) TestOnBorrowPeriod() time.Duration {
 	if o.testOnBorrowPeriod < 0 {
 		return defaultTestOnBorrowTimeout

@@ -9,24 +9,29 @@ const (
 	pingCommand = "PING"
 )
 
+// DefaultClient returns a client with default options
 func DefaultClient() *Client {
 	pool := newPool(&Options{})
 	return &Client{pool: pool}
 }
 
+// SetupClient returns a client with provided options
 func SetupClient(options *Options) *Client {
 	pool := newPool(options)
 	return &Client{pool: pool}
 }
 
+// NewClient returns a client using provided redis.Pool
 func NewClient(pool *redis.Pool) *Client {
 	return &Client{pool: pool}
 }
 
+// Client redis client
 type Client struct {
 	pool *redis.Pool
 }
 
+// GetConnection gets a connection
 func (r *Client) GetConnection() redis.Conn {
 	return r.pool.Get()
 }
