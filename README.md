@@ -1,0 +1,2 @@
+# eredigo
+Redis Client
