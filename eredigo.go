@@ -37,10 +37,10 @@ func (r *Client) GetConnection() redis.Conn {
 }
 
 func newPool(options *Options) *redis.Pool {
-	connectionIdleTimeout := options.ConnectionIdleTimeout()
-	connectionMaxActive := options.ConnectionMaxActive()
-	connectionMaxIdle := options.ConnectionMaxIdle()
-	connectionWait := options.ConnectionWait()
+	connectionIdleTimeout := options.GetConnectionIdleTimeout()
+	connectionMaxActive := options.GetConnectionMaxActive()
+	connectionMaxIdle := options.GetConnectionMaxIdle()
+	connectionWait := options.GetConnectionWait()
 
 	return &redis.Pool{
 		IdleTimeout:  connectionIdleTimeout,
@@ -53,17 +53,17 @@ func newPool(options *Options) *redis.Pool {
 }
 
 func dial(options *Options) func() (redis.Conn, error) {
-	network := options.Network()
-	address := options.Address()
+	network := options.GetNetwork()
+	address := options.GetAddress()
 
 	dialOptions := make([]redis.DialOption, 7)
-	dialOptions[0] = redis.DialPassword(options.Password())
-	dialOptions[1] = redis.DialDatabase(options.Database())
-	dialOptions[2] = redis.DialConnectTimeout(options.ConnectTimeout())
-	dialOptions[3] = redis.DialWriteTimeout(options.WriteTimeout())
-	dialOptions[4] = redis.DialReadTimeout(options.ReadTimeout())
-	dialOptions[5] = redis.DialTLSSkipVerify(options.TlsSkipVerify())
-	dialOptions[6] = redis.DialTLSConfig(options.TlsConfig())
+	dialOptions[0] = redis.DialPassword(options.GetPassword())
+	dialOptions[1] = redis.DialDatabase(options.GetDatabase())
+	dialOptions[2] = redis.DialConnectTimeout(options.GetConnectTimeout())
+	dialOptions[3] = redis.DialWriteTimeout(options.GetWriteTimeout())
+	dialOptions[4] = redis.DialReadTimeout(options.GetReadTimeout())
+	dialOptions[5] = redis.DialTLSSkipVerify(options.GetTlsSkipVerify())
+	dialOptions[6] = redis.DialTLSConfig(options.GetTlsConfig())
 
 	return func() (redis.Conn, error) {
 		connection, err := redis.Dial(network, address, dialOptions...)
@@ -75,7 +75,7 @@ func dial(options *Options) func() (redis.Conn, error) {
 }
 
 func testOnBorrow(options *Options) func(redis.Conn, time.Time) error {
-	period := options.TestOnBorrowPeriod()
+	period := options.GetTestOnBorrowPeriod()
 
 	return func(connection redis.Conn, t time.Time) error {
 		if time.Since(t) < period {
