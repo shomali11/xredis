@@ -25,133 +25,133 @@ const (
 
 // Options contains redis options
 type Options struct {
-	host                  string
-	port                  int
-	password              string
-	database              int
-	network               string
-	connectTimeout        time.Duration
-	writeTimeout          time.Duration
-	readTimeout           time.Duration
-	connectionIdleTimeout time.Duration
-	connectionMaxIdle     int
-	connectionMaxActive   int
-	connectionWait        bool
-	tlsConfig             *tls.Config
-	tlsSkipVerify         bool
-	testOnBorrowPeriod    time.Duration
+	Host                  string
+	Port                  int
+	Password              string
+	Database              int
+	Network               string
+	ConnectTimeout        time.Duration
+	WriteTimeout          time.Duration
+	ReadTimeout           time.Duration
+	ConnectionIdleTimeout time.Duration
+	ConnectionMaxIdle     int
+	ConnectionMaxActive   int
+	ConnectionWait        bool
+	TlsConfig             *tls.Config
+	TlsSkipVerify         bool
+	TestOnBorrowPeriod    time.Duration
 }
 
-// Address returns address
-func (o *Options) Address() string {
-	return fmt.Sprintf(addressFormat, o.Host(), 6379)
+// GetAddress returns address
+func (o *Options) GetAddress() string {
+	return fmt.Sprintf(addressFormat, o.GetHost(), 6379)
 }
 
-// Host returns host
-func (o *Options) Host() string {
+// GetHost returns host
+func (o *Options) GetHost() string {
 	if len(o.host) == 0 {
 		return defaultHost
 	}
 	return o.host
 }
 
-// Port returns port
-func (o *Options) Port() int {
+// GetPort returns port
+func (o *Options) GetPort() int {
 	if o.port <= 0 {
 		return defaultPort
 	}
 	return o.port
 }
 
-// Password returns password
-func (o *Options) Password() string {
+// GetPassword returns password
+func (o *Options) GetPassword() string {
 	if len(o.password) == 0 {
 		return defaultPassword
 	}
 	return o.password
 }
 
-// Database returns database
-func (o *Options) Database() int {
+// GetDatabase returns database
+func (o *Options) GetDatabase() int {
 	if o.database < 0 {
 		return defaultDatabase
 	}
 	return o.database
 }
 
-// Network returns network
-func (o *Options) Network() string {
+// GetNetwork returns network
+func (o *Options) GetNetwork() string {
 	if len(o.network) == 0 {
 		return defaultNetwork
 	}
 	return o.network
 }
 
-// ConnectTimeout returns connect timeout
-func (o *Options) ConnectTimeout() time.Duration {
+// GetConnectTimeout returns connect timeout
+func (o *Options) GetConnectTimeout() time.Duration {
 	if o.connectTimeout < 0 {
 		return defaultConnectTimeout
 	}
 	return o.connectTimeout
 }
 
-// WriteTimeout returns write timeout
-func (o *Options) WriteTimeout() time.Duration {
+// GetWriteTimeout returns write timeout
+func (o *Options) GetWriteTimeout() time.Duration {
 	if o.connectTimeout < 0 {
 		return defaultWriteTimeout
 	}
 	return o.connectTimeout
 }
 
-// ReadTimeout returns read timeout
-func (o *Options) ReadTimeout() time.Duration {
+// GetReadTimeout returns read timeout
+func (o *Options) GetReadTimeout() time.Duration {
 	if o.connectTimeout < 0 {
 		return defaultReadTimeout
 	}
 	return o.connectTimeout
 }
 
-// ConnectionIdleTimeout returns connection idle timeout
-func (o *Options) ConnectionIdleTimeout() time.Duration {
+// GetConnectionIdleTimeout returns connection idle timeout
+func (o *Options) GetConnectionIdleTimeout() time.Duration {
 	if o.connectionIdleTimeout < 0 {
 		return defaultConnectionIdleTimeout
 	}
 	return o.connectionIdleTimeout
 }
 
-// ConnectionMaxIdle returns connection max idle
-func (o *Options) ConnectionMaxIdle() int {
+// GetConnectionMaxIdle returns connection max idle
+func (o *Options) GetConnectionMaxIdle() int {
 	if o.connectionMaxIdle < 0 {
 		return defaultConnectionMaxIdle
 	}
 	return o.connectionMaxIdle
 }
 
-// ConnectionMaxActive returns connection max active
-func (o *Options) ConnectionMaxActive() int {
+// GetConnectionMaxActive returns connection max active
+func (o *Options) GetConnectionMaxActive() int {
 	if o.connectionMaxActive < 0 {
 		return defaultConnectionMaxActive
 	}
 	return o.connectionMaxActive
 }
 
-// ConnectionWait returns connection wait
-func (o *Options) ConnectionWait() bool {
+// GetConnectionWait returns connection wait
+func (o *Options) GetConnectionWait() bool {
 	return o.connectionWait
 }
 
-// TlsConfig returns tls config
-func (o *Options) TlsConfig() *tls.Config {
+// GetTlsConfig returns tls config
+func (o *Options) GetTlsConfig() *tls.Config {
 	return o.tlsConfig
 }
 
-// TlsSkipVerify returns tls skip verify
-func (o *Options) TlsSkipVerify() bool {
+// GetTlsSkipVerify returns tls skip verify
+func (o *Options) GetTlsSkipVerify() bool {
 	return o.tlsSkipVerify
 }
 
-// TestOnBorrowPeriod return test on borrow period
-func (o *Options) TestOnBorrowPeriod() time.Duration {
+// GetTestOnBorrowPeriod return test on borrow period
+func (o *Options) GetTestOnBorrowPeriod() time.Duration {
 	if o.testOnBorrowPeriod < 0 {
 		return defaultTestOnBorrowTimeout
 	}
