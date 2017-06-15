@@ -44,7 +44,7 @@ type Options struct {
 
 // GetAddress returns address
 func (o *Options) GetAddress() string {
-	return fmt.Sprintf(addressFormat, o.GetHost(), 6379)
+	return fmt.Sprintf(addressFormat, o.GetHost(), o.GetPort())
 }
 
 // GetHost returns host
