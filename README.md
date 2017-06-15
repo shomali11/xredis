@@ -20,7 +20,7 @@ func main() {
 	client := xredis.DefaultClient()
 	defer client.Close()
 
-	fmt.Println(client.Ping())
+	fmt.Println(client.Ping()) // PONG <nil>
 }
 ```
 
@@ -65,7 +65,7 @@ func main() {
 	client := xredis.SetupClient(options)
 	defer client.Close()
 
-	fmt.Println(client.Ping())
+	fmt.Println(client.Ping()) // PONG <nil>
 }
 ```
 
@@ -114,7 +114,75 @@ func main() {
 	client := xredis.NewClient(pool)
 	defer client.Close()
 
-	fmt.Println(client.Ping())
+	fmt.Println(client.Ping()) // PONG <nil>
 }
+```
 
+## Example 4
+
+Using the `Info` command to return redis' information and statistics
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/shomali11/xredis"
+)
+
+func main() {
+	client := xredis.DefaultClient()
+	defer client.Close()
+
+	fmt.Println(client.Info())
+}
+```
+
+## Example 5
+
+Using the `Set`, `Get` and `Del` commands to show how to set, get and delete keys and values.
+_Note that the `Get` returns 3 values, a `string` result, a `bool` that determines whether the key exists and an `error`_
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/shomali11/xredis"
+)
+
+func main() {
+	client := xredis.DefaultClient()
+	defer client.Close()
+
+	fmt.Println(client.Set("name", "Raed Shomali")) // OK <nil>
+	fmt.Println(client.Get("name"))                 // "Raed Shomali" true <nil>
+	fmt.Println(client.Del("name"))                 // 1 <nil>
+	fmt.Println(client.Get("name"))                 // "" false <nil>
+	fmt.Println(client.Del("name"))                 // 0 <nil>
+}
+```
+
+## Example 6
+
+Using the `Incr` command, we can increment a key's value by one
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/shomali11/xredis"
+)
+
+func main() {
+	client := xredis.DefaultClient()
+	defer client.Close()
+
+	fmt.Println(client.Set("number", "10")) // OK <nil>
+	fmt.Println(client.Get("number"))       // 10 true <nil>
+	fmt.Println(client.Incr("number"))      // 11 <nil>
+	fmt.Println(client.Get("number"))       // 11 true <nil>
+	fmt.Println(client.Del("number"))       // 1 <nil>
+}
 ```
