@@ -1,4 +1,4 @@
-package eredigo
+package xredis
 
 import (
 	"crypto/tls"

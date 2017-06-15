@@ -1,4 +1,4 @@
-package eredigo
+package xredis
 
 import (
 	"github.com/garyburd/redigo/redis"
