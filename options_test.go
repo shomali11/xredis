@@ -1,8 +1,8 @@
 package xredis
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestOptions_GetAddress(t *testing.T) {
