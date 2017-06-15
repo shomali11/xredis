@@ -49,111 +49,111 @@ func (o *Options) GetAddress() string {
 
 // GetHost returns host
 func (o *Options) GetHost() string {
-	if len(o.host) == 0 {
+	if len(o.Host) == 0 {
 		return defaultHost
 	}
-	return o.host
+	return o.Host
 }
 
 // GetPort returns port
 func (o *Options) GetPort() int {
-	if o.port <= 0 {
+	if o.Port <= 0 {
 		return defaultPort
 	}
-	return o.port
+	return o.Port
 }
 
 // GetPassword returns password
 func (o *Options) GetPassword() string {
-	if len(o.password) == 0 {
+	if len(o.Password) == 0 {
 		return defaultPassword
 	}
-	return o.password
+	return o.Password
 }
 
 // GetDatabase returns database
 func (o *Options) GetDatabase() int {
-	if o.database < 0 {
+	if o.Database < 0 {
 		return defaultDatabase
 	}
-	return o.database
+	return o.Database
 }
 
 // GetNetwork returns network
 func (o *Options) GetNetwork() string {
-	if len(o.network) == 0 {
+	if len(o.Network) == 0 {
 		return defaultNetwork
 	}
-	return o.network
+	return o.Network
 }
 
 // GetConnectTimeout returns connect timeout
 func (o *Options) GetConnectTimeout() time.Duration {
-	if o.connectTimeout < 0 {
+	if o.ConnectTimeout < 0 {
 		return defaultConnectTimeout
 	}
-	return o.connectTimeout
+	return o.ConnectTimeout
 }
 
 // GetWriteTimeout returns write timeout
 func (o *Options) GetWriteTimeout() time.Duration {
-	if o.connectTimeout < 0 {
+	if o.WriteTimeout < 0 {
 		return defaultWriteTimeout
 	}
-	return o.connectTimeout
+	return o.WriteTimeout
 }
 
 // GetReadTimeout returns read timeout
 func (o *Options) GetReadTimeout() time.Duration {
-	if o.connectTimeout < 0 {
+	if o.ReadTimeout < 0 {
 		return defaultReadTimeout
 	}
-	return o.connectTimeout
+	return o.ReadTimeout
 }
 
 // GetConnectionIdleTimeout returns connection idle timeout
 func (o *Options) GetConnectionIdleTimeout() time.Duration {
-	if o.connectionIdleTimeout < 0 {
+	if o.ConnectionIdleTimeout < 0 {
 		return defaultConnectionIdleTimeout
 	}
-	return o.connectionIdleTimeout
+	return o.ConnectionIdleTimeout
 }
 
 // GetConnectionMaxIdle returns connection max idle
 func (o *Options) GetConnectionMaxIdle() int {
-	if o.connectionMaxIdle < 0 {
+	if o.ConnectionMaxIdle < 0 {
 		return defaultConnectionMaxIdle
 	}
-	return o.connectionMaxIdle
+	return o.ConnectionMaxIdle
 }
 
 // GetConnectionMaxActive returns connection max active
 func (o *Options) GetConnectionMaxActive() int {
-	if o.connectionMaxActive < 0 {
+	if o.ConnectionMaxActive < 0 {
 		return defaultConnectionMaxActive
 	}
-	return o.connectionMaxActive
+	return o.ConnectionMaxActive
 }
 
 // GetConnectionWait returns connection wait
 func (o *Options) GetConnectionWait() bool {
-	return o.connectionWait
+	return o.ConnectionWait
 }
 
 // GetTlsConfig returns tls config
 func (o *Options) GetTlsConfig() *tls.Config {
-	return o.tlsConfig
+	return o.TlsConfig
 }
 
 // GetTlsSkipVerify returns tls skip verify
 func (o *Options) GetTlsSkipVerify() bool {
-	return o.tlsSkipVerify
+	return o.TlsSkipVerify
 }
 
 // GetTestOnBorrowPeriod return test on borrow period
 func (o *Options) GetTestOnBorrowPeriod() time.Duration {
-	if o.testOnBorrowPeriod < 0 {
+	if o.TestOnBorrowPeriod < 0 {
 		return defaultTestOnBorrowTimeout
 	}
-	return o.testOnBorrowPeriod
+	return o.TestOnBorrowPeriod
 }
