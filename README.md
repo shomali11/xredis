@@ -27,18 +27,18 @@ func main() {
 List of default options
 
 ```text
-	defaultHost                  = "localhost"
-	defaultPort                  = 6379
-	defaultPassword              = ""
-	defaultDatabase              = 0
-	defaultNetwork               = "tcp"
-	defaultConnectTimeout        = time.Second
-	defaultWriteTimeout          = time.Second
-	defaultReadTimeout           = time.Second
-	defaultConnectionIdleTimeout = 240 * time.Second
-	defaultConnectionMaxIdle     = 100
-	defaultConnectionMaxActive   = 1000
-	defaultTestOnBorrowTimeout   = time.Minute
+defaultHost                  = "localhost"
+defaultPort                  = 6379
+defaultPassword              = ""
+defaultDatabase              = 0
+defaultNetwork               = "tcp"
+defaultConnectTimeout        = time.Second
+defaultWriteTimeout          = time.Second
+defaultReadTimeout           = time.Second
+defaultConnectionIdleTimeout = 240 * time.Second
+defaultConnectionMaxIdle     = 100
+defaultConnectionMaxActive   = 1000
+defaultTestOnBorrowTimeout   = time.Minute
 ```
 
 ## Example 2
@@ -66,7 +66,7 @@ func main() {
 }
 ```
 
-Available options to modify
+Available options to set
 
 ```go
 // Options contains redis options
