@@ -6,6 +6,9 @@ import (
 )
 
 const (
+	setCommand = "SET"
+	delCommand = "DEL"
+	getCommand = "GET"
 	pingCommand = "PING"
 	infoCommand = "INFO"
 )
@@ -43,6 +46,40 @@ func (c *Client) Ping() (string, error) {
 	defer connection.Close()
 
 	return redis.String(connection.Do(pingCommand))
+}
+
+// Set sets a key/value pair
+func (c *Client) Set(key string, value string) (string, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.String(connection.Do(setCommand, key, value))
+}
+
+// Get retrieves a key's value
+func (c *Client) Get(key string) (string, bool, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	found := true
+	result, err := redis.String(connection.Do(getCommand, key))
+	if err == redis.ErrNil {
+		found = false
+		err = nil
+	}
+	return result, found, err
+}
+
+// Del deletes keys
+func (c *Client) Del(keys ...string) (int64, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	interfaces := make([]interface{}, len(keys))
+	for i, key := range keys {
+		interfaces[i] = key
+	}
+	return redis.Int64(connection.Do(delCommand, interfaces...))
 }
 
 // Info returns redis information and statistics
