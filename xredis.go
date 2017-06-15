@@ -9,6 +9,7 @@ const (
 	setCommand  = "SET"
 	delCommand  = "DEL"
 	getCommand  = "GET"
+	incrCommand = "INCR"
 	pingCommand = "PING"
 	infoCommand = "INFO"
 )
@@ -80,6 +81,14 @@ func (c *Client) Del(keys ...string) (int64, error) {
 		interfaces[i] = key
 	}
 	return redis.Int64(connection.Do(delCommand, interfaces...))
+}
+
+// Incr increments the key's value
+func (c *Client) Incr(key string) (int64, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.Int64(connection.Do(incrCommand, key))
 }
 
 // Info returns redis information and statistics
