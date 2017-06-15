@@ -31,9 +31,22 @@ type Client struct {
 	pool *redis.Pool
 }
 
-// GetConnection gets a connection
-func (r *Client) GetConnection() redis.Conn {
-	return r.pool.Get()
+// GetConnection gets a connection from the pool
+func (c *Client) GetConnection() redis.Conn {
+	return c.pool.Get()
+}
+
+// Ping pings redis
+func (c *Client) Ping() (string, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.String(connection.Do(pingCommand))
+}
+
+// Close closes connections pool
+func (c *Client) Close() error {
+	return c.pool.Close()
 }
 
 func newPool(options *Options) *redis.Pool {
