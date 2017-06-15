@@ -7,6 +7,7 @@ import (
 
 const (
 	pingCommand = "PING"
+	infoCommand = "INFO"
 )
 
 // DefaultClient returns a client with default options
@@ -42,6 +43,14 @@ func (c *Client) Ping() (string, error) {
 	defer connection.Close()
 
 	return redis.String(connection.Do(pingCommand))
+}
+
+// Info returns redis information and statistics
+func (c *Client) Info() (string, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.String(connection.Do(infoCommand))
 }
 
 // Close closes connections pool
