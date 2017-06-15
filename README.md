@@ -38,6 +38,9 @@ defaultReadTimeout           = time.Second
 defaultConnectionIdleTimeout = 240 * time.Second
 defaultConnectionMaxIdle     = 100
 defaultConnectionMaxActive   = 1000
+defaultConnectionWait        = false
+defaultTlsConfig             = nil
+defaultTlsSkipVerify         = false
 defaultTestOnBorrowTimeout   = time.Minute
 ```
 
@@ -69,7 +72,6 @@ func main() {
 Available options to set
 
 ```go
-// Options contains redis options
 type Options struct {
 	Host                  string
 	Port                  int
