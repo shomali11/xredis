@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	setCommand = "SET"
-	delCommand = "DEL"
-	getCommand = "GET"
+	setCommand  = "SET"
+	delCommand  = "DEL"
+	getCommand  = "GET"
 	pingCommand = "PING"
 	infoCommand = "INFO"
 )
