@@ -12,7 +12,9 @@ const (
 	pingCommand   = "PING"
 	infoCommand   = "INFO"
 	incrCommand   = "INCR"
+	decrCommand   = "DECR"
 	incrByCommand = "INCRBY"
+	decrByCommand = "DECRBY"
 )
 
 // DefaultClient returns a client with default options
@@ -90,12 +92,28 @@ func (c *Client) Incr(key string) (int64, error) {
 	return redis.Int64(connection.Do(incrCommand, key))
 }
 
+// Decr decrements the key's value
+func (c *Client) Decr(key string) (int64, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.Int64(connection.Do(decrCommand, key))
+}
+
 // IncrBy increments the key's value by the increment provided
 func (c *Client) IncrBy(key string, increment int) (int64, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
 	return redis.Int64(connection.Do(incrByCommand, key, increment))
+}
+
+// DecrBy decrements the key's value by the decrement provided
+func (c *Client) DecrBy(key string, decrement int) (int64, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.Int64(connection.Do(decrByCommand, key, decrement))
 }
 
 // Info returns redis information and statistics

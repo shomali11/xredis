@@ -2,6 +2,36 @@
 
 `xredis` is a wrapper around [redigo](https://github.com/garyburd/redigo)
 
+## Features
+
+* Type safe client
+* Easy to setup
+* Connection pool provided automatically
+* Supports the following Redis commands
+ * INFO
+ * SET
+ * GET
+ * DEL
+ * INCR
+ * INCRBY
+ * DECR
+ * DECRBY
+ * PING
+ * _More coming soon_
+* Full access to Redigo's API [github.com/garyburd/redigok](https://github.com/garyburd/redigo)
+
+## Usage
+
+Using `govendor` [github.com/kardianos/govendor](https://github.com/kardianos/govendor):
+
+```
+govendor fetch github.com/shomali11/xredis
+```
+
+## Dependencies
+
+* `redigo` [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
+
 # Examples
 
 ## Example 1
@@ -212,6 +242,54 @@ func main() {
 ```
 
 ## Example 8
+
+Using the `Decr` command, we can decrement a key's value by one
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/shomali11/xredis"
+)
+
+func main() {
+	client := xredis.DefaultClient()
+	defer client.Close()
+
+	fmt.Println(client.Set("number", "10")) // OK <nil>
+	fmt.Println(client.Get("number"))       // 10 true <nil>
+	fmt.Println(client.Decr("number"))      // 9 <nil>
+	fmt.Println(client.Get("number"))       // 9 true <nil>
+	fmt.Println(client.Del("number"))       // 1 <nil>
+}
+```
+
+## Example 9
+
+Using the `DecrBy` command, we can decrement a key's value by an decrement
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/shomali11/xredis"
+)
+
+func main() {
+	client := xredis.DefaultClient()
+	defer client.Close()
+
+	fmt.Println(client.Set("number", "10"))  // OK <nil>
+	fmt.Println(client.Get("number"))        // 10 true <nil>
+	fmt.Println(client.DecrBy("number", 5))  // 5 <nil> 
+	fmt.Println(client.Get("number"))        // 5 true <nil>
+	fmt.Println(client.Del("number"))        // 1 <nil>
+}
+```
+
+## Example 10
 
 Can't find the command you want? You have full access to `redigo`'s API.
 

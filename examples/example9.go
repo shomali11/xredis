@@ -11,7 +11,7 @@ func main() {
 
 	fmt.Println(client.Set("number", "10"))
 	fmt.Println(client.Get("number"))
-	fmt.Println(client.Decr("number"))
+	fmt.Println(client.DecrBy("number", 5))
 	fmt.Println(client.Get("number"))
 	fmt.Println(client.Del("number"))
 }
