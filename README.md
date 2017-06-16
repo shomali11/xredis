@@ -13,6 +13,10 @@
     * SET
     * GET
     * DEL
+    * HSET
+    * HGET
+    * HGETALL
+    * HDEL
     * INCR
     * INCRBY
     * DECR
@@ -311,6 +315,34 @@ func main() {
 ```
 
 ## Example 11
+
+Using the `HSet`, `HGet`, `HGetAll` and `HDel` commands to show how to set, get and delete hash keys, fields and values.
+_Note that the `HGetAll` returns 2 values, a `map[string]string` result and an `error`_
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/shomali11/xredis"
+)
+
+func main() {
+	client := xredis.DefaultClient()
+	defer client.Close()
+
+	fmt.Println(client.HSet("hash", "name", "Raed Shomali")) // 1 <nil>
+	fmt.Println(client.HSet("hash", "sport", "Football"))    // 1 <nil>
+	fmt.Println(client.HGet("hash", "name"))                 // "Raed Shomali" true <nil>
+	fmt.Println(client.HGetAll("hash"))                      // map[name:Raed Shomali sport:Football] <nil>
+	fmt.Println(client.HDel("hash", "name", "sport"))        // 2 <nil>
+	fmt.Println(client.HGet("hash", "name"))                 // "" false <nil>
+	fmt.Println(client.HGetAll("hash"))                      // map[] nil
+	fmt.Println(client.HDel("hash", "name"))                 // 0 <nil>
+}
+```
+
+## Example 12
 
 Can't find the command you want? You have full access to `redigo`'s API.
 
