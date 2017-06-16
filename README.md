@@ -11,20 +11,20 @@ Built on top of [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
     * `redigo`'s `redis.Pool`
 * Connection pool provided automatically
 * Supports the following Redis commands
-    * ECHO
-    * INFO
-    * SET
-    * GET
-    * DEL
-    * HSET
-    * HGET
-    * HGETALL
-    * HDEL
-    * INCR
-    * INCRBY
-    * DECR
-    * DECRBY
-    * PING
+    * **ECHO**
+    * **INFO**
+    * **SET**
+    * **GET**
+    * **DEL**
+    * **HSET**
+    * **HGET**
+    * **HGETALL**
+    * **HDEL**
+    * **INCR**
+    * **INCRBY**
+    * **DECR**
+    * **DECRBY**
+    * **PING**
     * _More coming soon_
 * Full access to Redigo's API [github.com/garyburd/redigok](https://github.com/garyburd/redigo)
 
