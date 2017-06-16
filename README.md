@@ -8,16 +8,16 @@
 * Easy to setup
 * Connection pool provided automatically
 * Supports the following Redis commands
- * INFO
- * SET
- * GET
- * DEL
- * INCR
- * INCRBY
- * DECR
- * DECRBY
- * PING
- * _More coming soon_
+    * INFO
+    * SET
+    * GET
+    * DEL
+    * INCR
+    * INCRBY
+    * DECR
+    * DECRBY
+    * PING
+    * _More coming soon_
 * Full access to Redigo's API [github.com/garyburd/redigok](https://github.com/garyburd/redigo)
 
 ## Usage
