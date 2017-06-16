@@ -9,9 +9,10 @@ const (
 	setCommand  = "SET"
 	delCommand  = "DEL"
 	getCommand  = "GET"
-	incrCommand = "INCR"
 	pingCommand = "PING"
 	infoCommand = "INFO"
+	incrCommand = "INCR"
+	incrByCommand = "INCRBY"
 )
 
 // DefaultClient returns a client with default options
@@ -62,13 +63,11 @@ func (c *Client) Get(key string) (string, bool, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
-	found := true
 	result, err := redis.String(connection.Do(getCommand, key))
 	if err == redis.ErrNil {
-		found = false
-		err = nil
+		return result, false, nil
 	}
-	return result, found, err
+	return result, true, err
 }
 
 // Del deletes keys
@@ -89,6 +88,14 @@ func (c *Client) Incr(key string) (int64, error) {
 	defer connection.Close()
 
 	return redis.Int64(connection.Do(incrCommand, key))
+}
+
+// IncrBy increments the key's value by the increment provided
+func (c *Client) IncrBy(key string, increment int) (int64, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.Int64(connection.Do(incrByCommand, key, increment))
 }
 
 // Info returns redis information and statistics
