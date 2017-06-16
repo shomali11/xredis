@@ -10,6 +10,7 @@ const (
 	delCommand    = "DEL"
 	getCommand    = "GET"
 	pingCommand   = "PING"
+	echoCommand   = "ECHO"
 	infoCommand   = "INFO"
 	incrCommand   = "INCR"
 	decrCommand   = "DECR"
@@ -114,6 +115,14 @@ func (c *Client) DecrBy(key string, decrement int) (int64, error) {
 	defer connection.Close()
 
 	return redis.Int64(connection.Do(decrByCommand, key, decrement))
+}
+
+// Echo echoes the message
+func (c *Client) Echo(message string) (string, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.String(connection.Do(echoCommand, message))
 }
 
 // Info returns redis information and statistics

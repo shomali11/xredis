@@ -8,6 +8,7 @@
 * Easy to setup
 * Connection pool provided automatically
 * Supports the following Redis commands
+    * ECHO
     * INFO
     * SET
     * GET
@@ -290,6 +291,26 @@ func main() {
 ```
 
 ## Example 10
+
+Using the `Echo` command to echo a message
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/shomali11/xredis"
+)
+
+func main() {
+	client := xredis.DefaultClient()
+	defer client.Close()
+
+	fmt.Println(client.Echo("Hello"))  // Hello <nil>
+}
+```
+
+## Example 11
 
 Can't find the command you want? You have full access to `redigo`'s API.
 
