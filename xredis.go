@@ -6,12 +6,12 @@ import (
 )
 
 const (
-	setCommand  = "SET"
-	delCommand  = "DEL"
-	getCommand  = "GET"
-	pingCommand = "PING"
-	infoCommand = "INFO"
-	incrCommand = "INCR"
+	setCommand    = "SET"
+	delCommand    = "DEL"
+	getCommand    = "GET"
+	pingCommand   = "PING"
+	infoCommand   = "INFO"
+	incrCommand   = "INCR"
 	incrByCommand = "INCRBY"
 )
 

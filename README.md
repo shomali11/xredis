@@ -186,3 +186,51 @@ func main() {
 	fmt.Println(client.Del("number"))       // 1 <nil>
 }
 ```
+
+## Example 7
+
+Using the `IncrBy` command, we can increment a key's value by an increment
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/shomali11/xredis"
+)
+
+func main() {
+	client := xredis.DefaultClient()
+	defer client.Close()
+
+	fmt.Println(client.Set("number", "10"))  // OK <nil>
+	fmt.Println(client.Get("number"))        // 10 true <nil>
+	fmt.Println(client.IncrBy("number", 10)) // 20 <nil> 
+	fmt.Println(client.Get("number"))        // 20 true <nil>
+	fmt.Println(client.Del("number"))        // 1 <nil>
+}
+```
+
+## Example 8
+
+Can't find the command you want? You have full access to `redigo`'s API.
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/garyburd/redigo/redis"
+	"github.com/shomali11/xredis"
+)
+
+func main() {
+	client := xredis.DefaultClient()
+	defer client.Close()
+
+	connection := client.GetConnection()
+	defer connection.Close()
+
+	fmt.Println(redis.String(connection.Do("INFO")))
+}
+```
