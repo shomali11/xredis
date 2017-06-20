@@ -11,20 +11,10 @@ Built on top of [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
     * `redigo`'s `redis.Pool`
 * Connection pool provided automatically
 * Supports the following Redis commands
-    * **ECHO**
-    * **INFO**
-    * **SET**
-    * **GET**
-    * **DEL**
-    * **HSET**
-    * **HGET**
-    * **HGETALL**
-    * **HDEL**
-    * **INCR**
-    * **INCRBY**
-    * **DECR**
-    * **DECRBY**
-    * **PING**
+    * **ECHO**, **INFO**, **PING**
+    * **SET**, **GET**, **DEL**
+    * **HSET**, **HGET**, **HGETALL**, **HDEL**
+    * **INCR**, **INCRBY**, **DECR**, **DECRBY**
     * _More coming soon_
 * Full access to Redigo's API [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
 
@@ -195,7 +185,9 @@ func main() {
 
 	fmt.Println(client.Set("name", "Raed Shomali")) // OK <nil>
 	fmt.Println(client.Get("name"))                 // "Raed Shomali" true <nil>
+	fmt.Println(client.Exists("name"))              // 1 <nil>
 	fmt.Println(client.Del("name"))                 // 1 <nil>
+	fmt.Println(client.Exists("name"))              // 0 <nil>
 	fmt.Println(client.Get("name"))                 // "" false <nil>
 	fmt.Println(client.Del("name"))                 // 0 <nil>
 }
@@ -319,7 +311,7 @@ func main() {
 
 ## Example 11
 
-Using the `HSet`, `HGet`, `HGetAll` and `HDel` commands to show how to set, get and delete hash keys, fields and values.
+Using the `HSet`, `HGet`, `HGetAll`, `HEXISTS` and `HDel` commands to show how to set, get and delete hash keys, fields and values.
 _Note that the `HGetAll` returns 2 values, a `map[string]string` result and an `error`_
 
 ```go
@@ -338,8 +330,10 @@ func main() {
 	fmt.Println(client.HSet("hash", "sport", "Football"))    // 1 <nil>
 	fmt.Println(client.HGet("hash", "name"))                 // "Raed Shomali" true <nil>
 	fmt.Println(client.HGetAll("hash"))                      // map[name:Raed Shomali sport:Football] <nil>
+	fmt.Println(client.HExists("hash", "name"))              // true <nil>
 	fmt.Println(client.HDel("hash", "name", "sport"))        // 2 <nil>
 	fmt.Println(client.HGet("hash", "name"))                 // "" false <nil>
+	fmt.Println(client.HExists("hash", "name"))              // false <nil>
 	fmt.Println(client.HGetAll("hash"))                      // map[] nil
 	fmt.Println(client.HDel("hash", "name"))                 // 0 <nil>
 }

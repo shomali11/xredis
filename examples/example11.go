@@ -13,8 +13,10 @@ func main() {
 	fmt.Println(client.HSet("hash", "sport", "Football"))
 	fmt.Println(client.HGet("hash", "name"))
 	fmt.Println(client.HGetAll("hash"))
+	fmt.Println(client.HExists("hash", "name"))
 	fmt.Println(client.HDel("hash", "name", "sport"))
 	fmt.Println(client.HGet("hash", "name"))
+	fmt.Println(client.HExists("hash", "name"))
 	fmt.Println(client.HGetAll("hash"))
 	fmt.Println(client.HDel("hash", "name"))
 }

@@ -17,6 +17,8 @@ const (
 	hsetCommand    = "HSET"
 	hgetCommand    = "HGET"
 	hdelCommand    = "HDEL"
+	existsCommand  = "EXISTS"
+	hexistsCommand = "HEXISTS"
 	hgetAllCommand = "HGETALL"
 	incrByCommand  = "INCRBY"
 	decrByCommand  = "DECRBY"
@@ -77,6 +79,18 @@ func (c *Client) Get(key string) (string, bool, error) {
 	return result, true, err
 }
 
+// Exists checks how many keys exist
+func (c *Client) Exists(keys ...string) (int64, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	interfaces := make([]interface{}, len(keys))
+	for i, key := range keys {
+		interfaces[i] = key
+	}
+	return redis.Int64(connection.Do(existsCommand, interfaces...))
+}
+
 // Del deletes keys
 func (c *Client) Del(keys ...string) (int64, error) {
 	connection := c.GetConnection()
@@ -95,6 +109,18 @@ func (c *Client) HSet(key string, field string, value string) (int, error) {
 	defer connection.Close()
 
 	return redis.Int(connection.Do(hsetCommand, key, field, value))
+}
+
+// HExists determine's a key's field's existence
+func (c *Client) HExists(key string, field string) (bool, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	result, err := redis.Bool(connection.Do(hexistsCommand, key, field))
+	if err == redis.ErrNil {
+		return false, nil
+	}
+	return result, err
 }
 
 // HGet retrieves a key's field's value
