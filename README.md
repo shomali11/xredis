@@ -293,7 +293,7 @@ func main() {
 
 ## Example 10
 
-Using the `HSet`, `HGet`, `HGetAll`, `HEXISTS` and `HDel` commands to show how to set, get and delete hash keys, fields and values.
+Using the `HSet`, `HGet`, `HGetAll`, `HExists` and `HDel` commands to show how to set, get and delete hash keys, fields and values.
 _Note that the `HGetAll` returns 2 values, a `map[string]string` result and an `error`_
 
 ```go
