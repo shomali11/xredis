@@ -170,7 +170,7 @@ func main() {
 
 ## Example 5
 
-Using the `Set`, `Get`, `EXISTS` and `Del` commands to show how to set, get and delete keys and values.
+Using the `Set`, `Get`, `Exists` and `Del` commands to show how to set, get and delete keys and values.
 _Note that the `Get` returns 3 values, a `string` result, a `bool` that determines whether the key exists and an `error`_
 
 ```go
