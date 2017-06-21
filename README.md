@@ -14,7 +14,7 @@ Built on top of [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
     * **ECHO**, **INFO**, **PING**
     * **SET**, **GET**, **DEL**, **EXISTS**
     * **HSET**, **HGET**, **HGETALL**, **HDEL**, **HEXISTS**
-    * **INCR**, **INCRBY**, **DECR**, **DECRBY**
+    * **INCR**, **INCRBY**, **DECR**, **DECRBY**, **HINCRBY**, **HINCRBYFLOAT**,
     * _More coming soon_
 * Full access to Redigo's API [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
 
