@@ -148,7 +148,7 @@ func main() {
 
 ## Example 4
 
-Using the `Echo` & `Info` commands to echo messages and return redis' information and statistics
+Using the `Ping`, `Echo` & `Info` commands to ping, echo messages and return redis' information and statistics
 
 ```go
 package main
@@ -162,6 +162,7 @@ func main() {
 	client := xredis.DefaultClient()
 	defer client.Close()
 
+	fmt.Println(client.Ping())         // PONG <nil>
 	fmt.Println(client.Echo("Hello"))  // Hello <nil>
 	fmt.Println(client.Info())         
 }

@@ -9,6 +9,7 @@ func main() {
 	client := xredis.DefaultClient()
 	defer client.Close()
 
+	fmt.Println(client.Ping())
 	fmt.Println(client.Echo("Hello"))
 	fmt.Println(client.Info())
 }
