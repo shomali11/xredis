@@ -187,9 +187,9 @@ func main() {
 
 	fmt.Println(client.Set("name", "Raed Shomali")) // OK <nil>
 	fmt.Println(client.Get("name"))                 // "Raed Shomali" true <nil>
-	fmt.Println(client.Exists("name"))              // 1 <nil>
+	fmt.Println(client.Exists("name"))              // true <nil>
 	fmt.Println(client.Del("name"))                 // 1 <nil>
-	fmt.Println(client.Exists("name"))              // 0 <nil>
+	fmt.Println(client.Exists("name"))              // false <nil>
 	fmt.Println(client.Get("name"))                 // "" false <nil>
 	fmt.Println(client.Del("name"))                 // 0 <nil>
 }

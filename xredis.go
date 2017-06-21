@@ -80,7 +80,7 @@ func (c *Client) Get(key string) (string, bool, error) {
 }
 
 // Exists checks how many keys exist
-func (c *Client) Exists(keys ...string) (int64, error) {
+func (c *Client) Exists(keys ...string) (bool, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
@@ -88,7 +88,8 @@ func (c *Client) Exists(keys ...string) (int64, error) {
 	for i, key := range keys {
 		interfaces[i] = key
 	}
-	return redis.Int64(connection.Do(existsCommand, interfaces...))
+	count, err := redis.Int64(connection.Do(existsCommand, interfaces...))
+	return count > 0, err
 }
 
 // Del deletes keys
@@ -116,11 +117,7 @@ func (c *Client) HExists(key string, field string) (bool, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
-	result, err := redis.Bool(connection.Do(hexistsCommand, key, field))
-	if err == redis.ErrNil {
-		return false, nil
-	}
-	return result, err
+	return redis.Bool(connection.Do(hexistsCommand, key, field))
 }
 
 // HGet retrieves a key's field's value
