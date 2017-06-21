@@ -6,22 +6,24 @@ import (
 )
 
 const (
-	setCommand     = "SET"
-	delCommand     = "DEL"
-	getCommand     = "GET"
-	pingCommand    = "PING"
-	echoCommand    = "ECHO"
-	infoCommand    = "INFO"
-	incrCommand    = "INCR"
-	decrCommand    = "DECR"
-	hsetCommand    = "HSET"
-	hgetCommand    = "HGET"
-	hdelCommand    = "HDEL"
-	existsCommand  = "EXISTS"
-	hexistsCommand = "HEXISTS"
-	hgetAllCommand = "HGETALL"
-	incrByCommand  = "INCRBY"
-	decrByCommand  = "DECRBY"
+	setCommand          = "SET"
+	delCommand          = "DEL"
+	getCommand          = "GET"
+	pingCommand         = "PING"
+	echoCommand         = "ECHO"
+	infoCommand         = "INFO"
+	incrCommand         = "INCR"
+	decrCommand         = "DECR"
+	hSetCommand         = "HSET"
+	hGetCommand         = "HGET"
+	hDelCommand         = "HDEL"
+	existsCommand       = "EXISTS"
+	hExistsCommand      = "HEXISTS"
+	hGetAllCommand      = "HGETALL"
+	incrByCommand       = "INCRBY"
+	decrByCommand       = "DECRBY"
+	hIncrByCommand      = "HINCRBY"
+	hIncrByFloatCommand = "HINCRBYFLOAT"
 )
 
 // DefaultClient returns a client with default options
@@ -104,66 +106,6 @@ func (c *Client) Del(keys ...string) (int64, error) {
 	return redis.Int64(connection.Do(delCommand, interfaces...))
 }
 
-// HSet sets a key's field/value pair
-func (c *Client) HSet(key string, field string, value string) (int, error) {
-	connection := c.GetConnection()
-	defer connection.Close()
-
-	return redis.Int(connection.Do(hsetCommand, key, field, value))
-}
-
-// HExists determine's a key's field's existence
-func (c *Client) HExists(key string, field string) (bool, error) {
-	connection := c.GetConnection()
-	defer connection.Close()
-
-	return redis.Bool(connection.Do(hexistsCommand, key, field))
-}
-
-// HGet retrieves a key's field's value
-func (c *Client) HGet(key string, field string) (string, bool, error) {
-	connection := c.GetConnection()
-	defer connection.Close()
-
-	result, err := redis.String(connection.Do(hgetCommand, key, field))
-	if err == redis.ErrNil {
-		return result, false, nil
-	}
-	return result, true, err
-}
-
-// HGetAll retrieves the key
-func (c *Client) HGetAll(key string) (map[string]string, error) {
-	connection := c.GetConnection()
-	defer connection.Close()
-
-	results, err := redis.Strings(connection.Do(hgetAllCommand, key))
-	if err != nil {
-		return nil, err
-	}
-
-	resultsMap := make(map[string]string)
-	for i := 0; i < len(results); i = i + 2 {
-		key := results[i]
-		value := results[i+1]
-		resultsMap[key] = value
-	}
-	return resultsMap, err
-}
-
-// HDel deletes a key's fields
-func (c *Client) HDel(key string, fields ...string) (int64, error) {
-	connection := c.GetConnection()
-	defer connection.Close()
-
-	interfaces := make([]interface{}, len(fields)+1)
-	interfaces[0] = key
-	for i, key := range fields {
-		interfaces[i+1] = key
-	}
-	return redis.Int64(connection.Do(hdelCommand, interfaces...))
-}
-
 // Incr increments the key's value
 func (c *Client) Incr(key string) (int64, error) {
 	connection := c.GetConnection()
@@ -194,6 +136,82 @@ func (c *Client) DecrBy(key string, decrement int) (int64, error) {
 	defer connection.Close()
 
 	return redis.Int64(connection.Do(decrByCommand, key, decrement))
+}
+
+// HSet sets a key's field/value pair
+func (c *Client) HSet(key string, field string, value string) (int, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.Int(connection.Do(hSetCommand, key, field, value))
+}
+
+// HExists determine's a key's field's existence
+func (c *Client) HExists(key string, field string) (bool, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.Bool(connection.Do(hExistsCommand, key, field))
+}
+
+// HGet retrieves a key's field's value
+func (c *Client) HGet(key string, field string) (string, bool, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	result, err := redis.String(connection.Do(hGetCommand, key, field))
+	if err == redis.ErrNil {
+		return result, false, nil
+	}
+	return result, true, err
+}
+
+// HGetAll retrieves the key
+func (c *Client) HGetAll(key string) (map[string]string, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	results, err := redis.Strings(connection.Do(hGetAllCommand, key))
+	if err != nil {
+		return nil, err
+	}
+
+	resultsMap := make(map[string]string)
+	for i := 0; i < len(results); i = i + 2 {
+		key := results[i]
+		value := results[i+1]
+		resultsMap[key] = value
+	}
+	return resultsMap, err
+}
+
+// HDel deletes a key's fields
+func (c *Client) HDel(key string, fields ...string) (int64, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	interfaces := make([]interface{}, len(fields)+1)
+	interfaces[0] = key
+	for i, key := range fields {
+		interfaces[i+1] = key
+	}
+	return redis.Int64(connection.Do(hDelCommand, interfaces...))
+}
+
+// HIncrBy increments the key's field's value by the increment provided
+func (c *Client) HIncrBy(key string, field string, increment int) (int64, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.Int64(connection.Do(hIncrByCommand, key, field, increment))
+}
+
+// HIncrByFloat increments the key's field's value by the increment provided
+func (c *Client) HIncrByFloat(key string, field string, increment float64) (float64, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.Float64(connection.Do(hIncrByFloatCommand, key, field, increment))
 }
 
 // Echo echoes the message

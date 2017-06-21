@@ -323,6 +323,30 @@ func main() {
 
 ## Example 11
 
+Using the `HIncrBy` and `HIncrByFloat` commands to show how to increment hash fields by integer and float increments values.
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/shomali11/xredis"
+)
+
+func main() {
+	client := xredis.DefaultClient()
+	defer client.Close()
+
+	fmt.Println(client.HSet("hash", "integer", "10"))      // 1 <nil>
+	fmt.Println(client.HSet("hash", "float", "5.5"))       // 1 <nil>
+	fmt.Println(client.HIncrBy("hash", "integer", 10))     // 20 <nil>
+	fmt.Println(client.HIncrByFloat("hash", "float", 3.3)) // 8.8 <nil>
+	fmt.Println(client.HDel("hash", "integer", "float"))   // 2 <nil>
+}
+```
+
+## Example 12
+
 Can't find the command you want? You have full access to `redigo`'s API.
 
 ```go
