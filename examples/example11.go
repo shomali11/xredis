@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/garyburd/redigo/redis"
 	"github.com/shomali11/xredis"
 )
 
@@ -9,14 +10,8 @@ func main() {
 	client := xredis.DefaultClient()
 	defer client.Close()
 
-	fmt.Println(client.HSet("hash", "name", "Raed Shomali"))
-	fmt.Println(client.HSet("hash", "sport", "Football"))
-	fmt.Println(client.HGet("hash", "name"))
-	fmt.Println(client.HGetAll("hash"))
-	fmt.Println(client.HExists("hash", "name"))
-	fmt.Println(client.HDel("hash", "name", "sport"))
-	fmt.Println(client.HGet("hash", "name"))
-	fmt.Println(client.HExists("hash", "name"))
-	fmt.Println(client.HGetAll("hash"))
-	fmt.Println(client.HDel("hash", "name"))
+	connection := client.GetConnection()
+	defer connection.Close()
+
+	fmt.Println(redis.String(connection.Do("INFO")))
 }

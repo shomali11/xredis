@@ -148,7 +148,7 @@ func main() {
 
 ## Example 4
 
-Using the `Info` command to return redis' information and statistics
+Using the `Echo` & `Info` commands to echo messages and return redis' information and statistics
 
 ```go
 package main
@@ -162,7 +162,8 @@ func main() {
 	client := xredis.DefaultClient()
 	defer client.Close()
 
-	fmt.Println(client.Info())
+	fmt.Println(client.Echo("Hello"))  // Hello <nil>
+	fmt.Println(client.Info())         
 }
 ```
 
@@ -291,26 +292,6 @@ func main() {
 
 ## Example 10
 
-Using the `Echo` command to echo a message
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/shomali11/xredis"
-)
-
-func main() {
-	client := xredis.DefaultClient()
-	defer client.Close()
-
-	fmt.Println(client.Echo("Hello"))  // Hello <nil>
-}
-```
-
-## Example 11
-
 Using the `HSet`, `HGet`, `HGetAll`, `HEXISTS` and `HDel` commands to show how to set, get and delete hash keys, fields and values.
 _Note that the `HGetAll` returns 2 values, a `map[string]string` result and an `error`_
 
@@ -339,7 +320,7 @@ func main() {
 }
 ```
 
-## Example 12
+## Example 11
 
 Can't find the command you want? You have full access to `redigo`'s API.
 
