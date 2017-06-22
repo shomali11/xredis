@@ -11,7 +11,7 @@ Built on top of [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
     * `redigo`'s `redis.Pool`
 * Connection pool provided automatically
 * Supports the following Redis commands
-    * **ECHO**, **INFO**, **PING**
+    * **ECHO**, **INFO**, **PING**, **FLUSH**, **FLUSHALL**
     * **SET**, **GET**, **DEL**, **EXISTS**, **KEYS**
     * **HSET**, **HGET**, **HGETALL**, **HDEL**, **HEXISTS**, **HKEYS**
     * **INCR**, **INCRBY**, **INCRBYFLOAT**, **DECR**, **DECRBY**, **DECRBYFLOAT**
@@ -165,6 +165,8 @@ func main() {
 
 	fmt.Println(client.Ping())         // PONG <nil>
 	fmt.Println(client.Echo("Hello"))  // Hello <nil>
+	fmt.Println(client.FlushDb())      // OK <nil>
+	fmt.Println(client.FlushAll())     // OK <nil>
 	fmt.Println(client.Info())         
 }
 ```

@@ -31,7 +31,7 @@ import (
 var nowFunc = time.Now // for testing
 
 // ErrPoolExhausted is returned from a pool connection method (Do, Send,
-// Receive, Flush, Err) when the maximum number of database connections in the
+// Receive, FlushDb, Err) when the maximum number of database connections in the
 // pool has been reached.
 var ErrPoolExhausted = errors.New("redigo: connection pool exhausted")
 
@@ -171,7 +171,7 @@ func NewPool(newFn func() (Conn, error), maxIdle int) *Pool {
 // Get gets a connection. The application must close the returned connection.
 // This method always returns a valid connection so that applications can defer
 // error handling to the first use of the connection. If there is an error
-// getting an underlying connection, then the connection Err, Do, Send, Flush
+// getting an underlying connection, then the connection Err, Do, Send, FlushDb
 // and Receive methods return that error.
 func (p *Pool) Get() Conn {
 	c, err := p.get()

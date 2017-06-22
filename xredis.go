@@ -17,6 +17,8 @@ const (
 	hGetCommand         = "HGET"
 	hDelCommand         = "HDEL"
 	hKeysCommand        = "HKEYS"
+	flushDbCommand      = "FLUSHDB"
+	flushAllCommand     = "FLUSHALL"
 	existsCommand       = "EXISTS"
 	hExistsCommand      = "HEXISTS"
 	hGetAllCommand      = "HGETALL"
@@ -59,6 +61,38 @@ func (c *Client) Ping() (string, error) {
 	defer connection.Close()
 
 	return redis.String(connection.Do(pingCommand))
+}
+
+// FlushDb flushes the keys of the current database
+func (c *Client) FlushDb() (string, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.String(connection.Do(flushDbCommand))
+}
+
+// FlushAll flushes the keys of all databases
+func (c *Client) FlushAll() (string, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.String(connection.Do(flushAllCommand))
+}
+
+// Echo echoes the message
+func (c *Client) Echo(message string) (string, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.String(connection.Do(echoCommand, message))
+}
+
+// Info returns redis information and statistics
+func (c *Client) Info() (string, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.String(connection.Do(infoCommand))
 }
 
 // Set sets a key/value pair
@@ -252,22 +286,6 @@ func (c *Client) HDecrBy(key string, field string, decrement int) (int64, error)
 // HDecrByFloat decrements the key's field's value by the decrement provided
 func (c *Client) HDecrByFloat(key string, field string, decrement float64) (float64, error) {
 	return c.HIncrByFloat(key, field, -decrement)
-}
-
-// Echo echoes the message
-func (c *Client) Echo(message string) (string, error) {
-	connection := c.GetConnection()
-	defer connection.Close()
-
-	return redis.String(connection.Do(echoCommand, message))
-}
-
-// Info returns redis information and statistics
-func (c *Client) Info() (string, error) {
-	connection := c.GetConnection()
-	defer connection.Close()
-
-	return redis.String(connection.Do(infoCommand))
 }
 
 // Close closes connections pool

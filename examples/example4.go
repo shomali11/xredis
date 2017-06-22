@@ -11,5 +11,7 @@ func main() {
 
 	fmt.Println(client.Ping())
 	fmt.Println(client.Echo("Hello"))
+	fmt.Println(client.FlushDb())
+	fmt.Println(client.FlushAll())
 	fmt.Println(client.Info())
 }
