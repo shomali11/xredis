@@ -270,7 +270,7 @@ func main() {
 
 ## Example 8
 
-Using the `HIncrBy` and `HIncrByFloat` commands to show how to increment hash fields by integer and float increments values.
+Using the `HIncr`, `HIncrBy`, `HIncrByFloat`,`HDecr`, `HDecrBy` and `HDecrByFloat` commands to show how to increment and decrement hash fields' values.
 
 ```go
 package main
@@ -284,11 +284,18 @@ func main() {
 	client := xredis.DefaultClient()
 	defer client.Close()
 
-	fmt.Println(client.HSet("hash", "integer", "10"))      // 1 <nil>
-	fmt.Println(client.HSet("hash", "float", "5.5"))       // 1 <nil>
-	fmt.Println(client.HIncrBy("hash", "integer", 10))     // 20 <nil>
-	fmt.Println(client.HIncrByFloat("hash", "float", 3.3)) // 8.8 <nil>
-	fmt.Println(client.HDel("hash", "integer", "float"))   // 2 <nil>
+	fmt.Println(client.HSet("hash", "integer", "10"))       // 1 <nil>
+	fmt.Println(client.HSet("hash", "float", "5.5"))        // 1 <nil>
+
+	fmt.Println(client.HIncr("hash", "integer"))            // 11 <nil>
+	fmt.Println(client.HIncrBy("hash", "integer", 10))      // 21 <nil>
+	fmt.Println(client.HDecrBy("hash", "integer", 5))       // 16 <nil>
+	fmt.Println(client.HDecr("hash", "integer"))            // 15 <nil>
+
+	fmt.Println(client.HIncrByFloat("hash", "float", 3.3))  // 8.8 <nil>
+	fmt.Println(client.HDecrByFloat("hash", "float", 1.1))  // 7.7 <nil>
+
+	fmt.Println(client.HDel("hash", "integer", "float"))    // 2 <nil>
 }
 ```
 
