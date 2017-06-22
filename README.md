@@ -12,9 +12,10 @@ Built on top of [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
 * Connection pool provided automatically
 * Supports the following Redis commands
     * **ECHO**, **INFO**, **PING**
-    * **SET**, **GET**, **DEL**, **EXISTS**
-    * **HSET**, **HGET**, **HGETALL**, **HDEL**, **HEXISTS**
-    * **INCR**, **INCRBY**, **DECR**, **DECRBY**, **HINCRBY**, **HINCRBYFLOAT**
+    * **SET**, **GET**, **DEL**, **EXISTS**, **KEYS**
+    * **HSET**, **HGET**, **HGETALL**, **HDEL**, **HEXISTS**, **HKEYS**
+    * **INCR**, **INCRBY**, **INCRBYFLOAT**, **DECR**, **DECRBY**, **DECRBYFLOAT**
+    * **HINCR**, **HINCRBY**, **HINCRBYFLOAT**, **HDECR**, **HDECRBY**, **HDECRBYFLOAT**
     * _More coming soon_
 * Full access to Redigo's API [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
 
@@ -170,7 +171,7 @@ func main() {
 
 ## Example 5
 
-Using the `Set`, `Get`, `Exists` and `Del` commands to show how to set, get and delete keys and values.
+Using the `Set`, `Keys`, `Get`, `Exists` and `Del` commands to show how to set, get and delete keys and values.
 _Note that the `Get` returns 3 values, a `string` result, a `bool` that determines whether the key exists and an `error`_
 
 ```go
@@ -186,6 +187,7 @@ func main() {
 	defer client.Close()
 
 	fmt.Println(client.Set("name", "Raed Shomali")) // OK <nil>
+	fmt.Println(client.Keys("n*"))                  // [name] <nil>
 	fmt.Println(client.Get("name"))                 // "Raed Shomali" true <nil>
 	fmt.Println(client.Exists("name"))              // true <nil>
 	fmt.Println(client.Del("name"))                 // 1 <nil>
@@ -197,7 +199,7 @@ func main() {
 
 ## Example 6
 
-Using the `Incr` command, we can increment a key's value by one
+Using the `Incr`, `IncrBy`, `IncrByFloat`, `Decr`, `DecrBy`, `DecrByFloat` commands, we can increment and decrement a key's value
 
 ```go
 package main
@@ -211,89 +213,30 @@ func main() {
 	client := xredis.DefaultClient()
 	defer client.Close()
 
-	fmt.Println(client.Set("number", "10")) // OK <nil>
-	fmt.Println(client.Get("number"))       // 10 true <nil>
-	fmt.Println(client.Incr("number"))      // 11 <nil>
-	fmt.Println(client.Get("number"))       // 11 true <nil>
-	fmt.Println(client.Del("number"))       // 1 <nil>
+	fmt.Println(client.Set("integer", "10"))       // OK <nil>
+	fmt.Println(client.Set("float", "5.5"))        // OK <nil>
+
+	fmt.Println(client.Get("integer"))             // 10 true <nil>
+	fmt.Println(client.Get("float"))               // 5.5 true <nil>
+
+	fmt.Println(client.Incr("integer"))            // 11 <nil>
+	fmt.Println(client.IncrBy("integer", 10))      // 21 <nil>
+	fmt.Println(client.DecrBy("integer", 5))       // 16 <nil>
+	fmt.Println(client.Decr("integer"))            // 15 <nil>
+
+	fmt.Println(client.IncrByFloat("float", 3.3))  // 8.8 <nil>
+	fmt.Println(client.DecrByFloat("float", 1.1))  // 7.7 <nil>
+
+	fmt.Println(client.Get("integer"))             // 15 true <nil>
+	fmt.Println(client.Get("float"))               // 7.7 true <nil>
+
+	fmt.Println(client.Del("integer", "float"))    // 2 <nil>
 }
 ```
 
 ## Example 7
 
-Using the `IncrBy` command, we can increment a key's value by an increment
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/shomali11/xredis"
-)
-
-func main() {
-	client := xredis.DefaultClient()
-	defer client.Close()
-
-	fmt.Println(client.Set("number", "10"))  // OK <nil>
-	fmt.Println(client.Get("number"))        // 10 true <nil>
-	fmt.Println(client.IncrBy("number", 10)) // 20 <nil> 
-	fmt.Println(client.Get("number"))        // 20 true <nil>
-	fmt.Println(client.Del("number"))        // 1 <nil>
-}
-```
-
-## Example 8
-
-Using the `Decr` command, we can decrement a key's value by one
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/shomali11/xredis"
-)
-
-func main() {
-	client := xredis.DefaultClient()
-	defer client.Close()
-
-	fmt.Println(client.Set("number", "10")) // OK <nil>
-	fmt.Println(client.Get("number"))       // 10 true <nil>
-	fmt.Println(client.Decr("number"))      // 9 <nil>
-	fmt.Println(client.Get("number"))       // 9 true <nil>
-	fmt.Println(client.Del("number"))       // 1 <nil>
-}
-```
-
-## Example 9
-
-Using the `DecrBy` command, we can decrement a key's value by an decrement
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/shomali11/xredis"
-)
-
-func main() {
-	client := xredis.DefaultClient()
-	defer client.Close()
-
-	fmt.Println(client.Set("number", "10"))  // OK <nil>
-	fmt.Println(client.Get("number"))        // 10 true <nil>
-	fmt.Println(client.DecrBy("number", 5))  // 5 <nil> 
-	fmt.Println(client.Get("number"))        // 5 true <nil>
-	fmt.Println(client.Del("number"))        // 1 <nil>
-}
-```
-
-## Example 10
-
-Using the `HSet`, `HGet`, `HGetAll`, `HExists` and `HDel` commands to show how to set, get and delete hash keys, fields and values.
+Using the `HSet`, `HKeys`, `HGet`, `HGetAll`, `HExists` and `HDel` commands to show how to set, get and delete hash keys, fields and values.
 _Note that the `HGetAll` returns 2 values, a `map[string]string` result and an `error`_
 
 ```go
@@ -310,6 +253,7 @@ func main() {
 
 	fmt.Println(client.HSet("hash", "name", "Raed Shomali")) // 1 <nil>
 	fmt.Println(client.HSet("hash", "sport", "Football"))    // 1 <nil>
+	fmt.Println(client.HKeys("hash"))                        // [name sport] <nil>
 	fmt.Println(client.HGet("hash", "name"))                 // "Raed Shomali" true <nil>
 	fmt.Println(client.HGetAll("hash"))                      // map[name:Raed Shomali sport:Football] <nil>
 	fmt.Println(client.HExists("hash", "name"))              // true <nil>
@@ -318,10 +262,11 @@ func main() {
 	fmt.Println(client.HExists("hash", "name"))              // false <nil>
 	fmt.Println(client.HGetAll("hash"))                      // map[] nil
 	fmt.Println(client.HDel("hash", "name"))                 // 0 <nil>
+	fmt.Println(client.HKeys("hash"))                        // [] <nil>
 }
 ```
 
-## Example 11
+## Example 8
 
 Using the `HIncrBy` and `HIncrByFloat` commands to show how to increment hash fields by integer and float increments values.
 
@@ -345,7 +290,7 @@ func main() {
 }
 ```
 
-## Example 12
+## Example 9
 
 Can't find the command you want? You have full access to `redigo`'s API.
 

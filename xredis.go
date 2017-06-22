@@ -9,19 +9,19 @@ const (
 	setCommand          = "SET"
 	delCommand          = "DEL"
 	getCommand          = "GET"
+	keysCommand         = "KEYS"
 	pingCommand         = "PING"
 	echoCommand         = "ECHO"
 	infoCommand         = "INFO"
-	incrCommand         = "INCR"
-	decrCommand         = "DECR"
 	hSetCommand         = "HSET"
 	hGetCommand         = "HGET"
 	hDelCommand         = "HDEL"
+	hKeysCommand        = "HKEYS"
 	existsCommand       = "EXISTS"
 	hExistsCommand      = "HEXISTS"
 	hGetAllCommand      = "HGETALL"
 	incrByCommand       = "INCRBY"
-	decrByCommand       = "DECRBY"
+	incrByFloatCommand  = "INCRBYFLOAT"
 	hIncrByCommand      = "HINCRBY"
 	hIncrByFloatCommand = "HINCRBYFLOAT"
 )
@@ -106,20 +106,17 @@ func (c *Client) Del(keys ...string) (int64, error) {
 	return redis.Int64(connection.Do(delCommand, interfaces...))
 }
 
-// Incr increments the key's value
-func (c *Client) Incr(key string) (int64, error) {
+// Keys retrieves keys that match a pattern
+func (c *Client) Keys(pattern string) ([]string, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
-	return redis.Int64(connection.Do(incrCommand, key))
+	return redis.Strings(connection.Do(keysCommand, pattern))
 }
 
-// Decr decrements the key's value
-func (c *Client) Decr(key string) (int64, error) {
-	connection := c.GetConnection()
-	defer connection.Close()
-
-	return redis.Int64(connection.Do(decrCommand, key))
+// Incr increments the key's value
+func (c *Client) Incr(key string) (int64, error) {
+	return c.IncrBy(key, 1)
 }
 
 // IncrBy increments the key's value by the increment provided
@@ -130,12 +127,27 @@ func (c *Client) IncrBy(key string, increment int) (int64, error) {
 	return redis.Int64(connection.Do(incrByCommand, key, increment))
 }
 
-// DecrBy decrements the key's value by the decrement provided
-func (c *Client) DecrBy(key string, decrement int) (int64, error) {
+// IncrByFloat increments the key's value by the increment provided
+func (c *Client) IncrByFloat(key string, increment float64) (float64, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
-	return redis.Int64(connection.Do(decrByCommand, key, decrement))
+	return redis.Float64(connection.Do(incrByFloatCommand, key, increment))
+}
+
+// Decr decrements the key's value
+func (c *Client) Decr(key string) (int64, error) {
+	return c.IncrBy(key, -1)
+}
+
+// DecrBy decrements the key's value by the decrement provided
+func (c *Client) DecrBy(key string, decrement int) (int64, error) {
+	return c.IncrBy(key, -decrement)
+}
+
+// DecrByFloat decrements the key's value by the decrement provided
+func (c *Client) DecrByFloat(key string, decrement float64) (float64, error) {
+	return c.IncrByFloat(key, -decrement)
 }
 
 // HSet sets a key's field/value pair
@@ -144,6 +156,14 @@ func (c *Client) HSet(key string, field string, value string) (int, error) {
 	defer connection.Close()
 
 	return redis.Int(connection.Do(hSetCommand, key, field, value))
+}
+
+// HKeys retrieves a hash's keys
+func (c *Client) HKeys(key string) ([]string, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.Strings(connection.Do(hKeysCommand, key))
 }
 
 // HExists determine's a key's field's existence
@@ -198,6 +218,11 @@ func (c *Client) HDel(key string, fields ...string) (int64, error) {
 	return redis.Int64(connection.Do(hDelCommand, interfaces...))
 }
 
+// HIncr increments the key's field's value
+func (c *Client) HIncr(key string, field string) (int64, error) {
+	return c.HIncrBy(key, field, 1)
+}
+
 // HIncrBy increments the key's field's value by the increment provided
 func (c *Client) HIncrBy(key string, field string, increment int) (int64, error) {
 	connection := c.GetConnection()
@@ -212,6 +237,21 @@ func (c *Client) HIncrByFloat(key string, field string, increment float64) (floa
 	defer connection.Close()
 
 	return redis.Float64(connection.Do(hIncrByFloatCommand, key, field, increment))
+}
+
+// HDecr decrements the key's field's value
+func (c *Client) HDecr(key string, field string) (int64, error) {
+	return c.HIncrBy(key, field, -1)
+}
+
+// HDecrBy decrements the key's field's value by the decrement provided
+func (c *Client) HDecrBy(key string, field string, decrement int) (int64, error) {
+	return c.HIncrBy(key, field, -decrement)
+}
+
+// HDecrByFloat decrements the key's field's value by the decrement provided
+func (c *Client) HDecrByFloat(key string, field string, decrement float64) (float64, error) {
+	return c.HIncrByFloat(key, field, -decrement)
 }
 
 // Echo echoes the message

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/garyburd/redigo/redis"
 	"github.com/shomali11/xredis"
 )
 
@@ -9,9 +10,8 @@ func main() {
 	client := xredis.DefaultClient()
 	defer client.Close()
 
-	fmt.Println(client.Set("number", "10"))
-	fmt.Println(client.Get("number"))
-	fmt.Println(client.DecrBy("number", 5))
-	fmt.Println(client.Get("number"))
-	fmt.Println(client.Del("number"))
+	connection := client.GetConnection()
+	defer connection.Close()
+
+	fmt.Println(redis.String(connection.Do("INFO")))
 }
