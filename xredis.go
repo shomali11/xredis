@@ -112,7 +112,10 @@ func (c *Client) Get(key string) (string, bool, error) {
 	if err == redis.ErrNil {
 		return result, false, nil
 	}
-	return result, true, err
+	if err != nil {
+		return result, false, err
+	}
+	return result, true, nil
 }
 
 // Exists checks how many keys exist
@@ -217,7 +220,10 @@ func (c *Client) HGet(key string, field string) (string, bool, error) {
 	if err == redis.ErrNil {
 		return result, false, nil
 	}
-	return result, true, err
+	if err != nil {
+		return result, false, err
+	}
+	return result, true, nil
 }
 
 // HGetAll retrieves the key

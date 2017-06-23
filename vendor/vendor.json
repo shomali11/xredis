@@ -27,6 +27,12 @@
 			"revisionTime": "2016-01-10T10:55:54Z"
 		},
 		{
+			"checksumSHA1": "NhcZhmYU2Br4v+iAh9vA9NB+Ihw=",
+			"path": "github.com/rafaeljusto/redigomock",
+			"revision": "dafd969785a5948b7a263843f53b3f90544772d0",
+			"revisionTime": "2017-04-07T13:29:14Z"
+		},
+		{
 			"checksumSHA1": "5NBHAe3S15q3L9hOLThnMZjIZRE=",
 			"path": "github.com/stretchr/testify/assert",
 			"revision": "f6abca593680b2315d2075e0f5e2a9751e3f431a",
