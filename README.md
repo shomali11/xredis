@@ -12,7 +12,7 @@ Built on top of [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
 * Connection pool provided automatically
 * Supports the following Redis commands
     * **ECHO**, **INFO**, **PING**, **FLUSH**, **FLUSHALL**
-    * **SET**, **GET**, **DEL**, **EXISTS**, **KEYS**
+    * **SET**, **SETEX**, **SETNX**, **GET**, **DEL**, **EXISTS**, **KEYS**
     * **HSET**, **HGET**, **HGETALL**, **HDEL**, **HEXISTS**, **HKEYS**
     * **INCR**, **INCRBY**, **INCRBYFLOAT**, **DECR**, **DECRBY**, **DECRBYFLOAT**
     * **HINCR**, **HINCRBY**, **HINCRBYFLOAT**, **HDECR**, **HDECRBY**, **HDECRBYFLOAT**
@@ -189,7 +189,9 @@ func main() {
 	defer client.Close()
 
 	fmt.Println(client.Set("name", "Raed Shomali")) // OK <nil>
-	fmt.Println(client.Keys("n*"))                  // [name] <nil>
+	fmt.Println(client.SetNx("name", "Hello"))      // "" false <nil>
+	fmt.Println(client.SetEx("id", "10", 1))        // OK true <nil>
+	fmt.Println(client.Keys("*"))                   // [id name] <nil>
 	fmt.Println(client.Get("name"))                 // "Raed Shomali" true <nil>
 	fmt.Println(client.Exists("name"))              // true <nil>
 	fmt.Println(client.Del("name"))                 // 1 <nil>

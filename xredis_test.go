@@ -1,9 +1,9 @@
 package xredis
 
 import (
+	"errors"
 	"github.com/garyburd/redigo/redis"
 	"github.com/rafaeljusto/redigomock"
-	"github.com/shomali11/util/errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -76,9 +76,52 @@ func TestClient_Set(t *testing.T) {
 
 	client := mockClient(connection)
 
-	result, err := client.Set("key", "value")
+	result, ok, err := client.Set("key", "value")
 	assert.Equal(t, result, "OK")
+	assert.True(t, ok)
 	assert.Nil(t, err)
+}
+
+func TestClient_SetNx(t *testing.T) {
+	connection := redigomock.NewConn()
+	connection.Command("SET", "key", "value", "NX").Expect("OK")
+
+	client := mockClient(connection)
+
+	result, ok, err := client.SetNx("key", "value")
+	assert.Equal(t, result, "OK")
+	assert.True(t, ok)
+	assert.Nil(t, err)
+
+	connection.Command("SET", "key", "value", "NX").ExpectError(redis.ErrNil)
+
+	client = mockClient(connection)
+
+	result, ok, err = client.SetNx("key", "value")
+	assert.Equal(t, result, "")
+	assert.False(t, ok)
+	assert.Nil(t, err)
+}
+
+func TestClient_SetEx(t *testing.T) {
+	connection := redigomock.NewConn()
+	connection.Command("SET", "key", "value", "EX", 1).Expect("OK")
+
+	client := mockClient(connection)
+
+	result, ok, err := client.SetEx("key", "value", 1)
+	assert.Equal(t, result, "OK")
+	assert.True(t, ok)
+	assert.Nil(t, err)
+
+	connection.Command("SET", "key", "value", "EX", 1).ExpectError(errors.New("Opps"))
+
+	client = mockClient(connection)
+
+	result, ok, err = client.SetEx("key", "value", 1)
+	assert.Equal(t, result, "")
+	assert.False(t, ok)
+	assert.NotNil(t, err)
 }
 
 func TestClient_Get(t *testing.T) {

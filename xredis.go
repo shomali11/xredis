@@ -6,6 +6,9 @@ import (
 )
 
 const (
+	expireOption    = "EX"
+	notExistsOption = "NX"
+
 	setCommand          = "SET"
 	delCommand          = "DEL"
 	getCommand          = "GET"
@@ -96,11 +99,27 @@ func (c *Client) Info() (string, error) {
 }
 
 // Set sets a key/value pair
-func (c *Client) Set(key string, value string) (string, error) {
+func (c *Client) Set(key string, value string) (string, bool, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
-	return redis.String(connection.Do(setCommand, key, value))
+	return toString(connection.Do(setCommand, key, value))
+}
+
+// SetNx sets a key/value pair if the key does not exist
+func (c *Client) SetNx(key string, value string) (string, bool, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return toString(connection.Do(setCommand, key, value, notExistsOption))
+}
+
+// SetEx sets a key/value pair with a timeout in seconds
+func (c *Client) SetEx(key string, value string, timeout int) (string, bool, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return toString(connection.Do(setCommand, key, value, expireOption, timeout))
 }
 
 // Get retrieves a key's value
@@ -108,14 +127,7 @@ func (c *Client) Get(key string) (string, bool, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
-	result, err := redis.String(connection.Do(getCommand, key))
-	if err == redis.ErrNil {
-		return result, false, nil
-	}
-	if err != nil {
-		return result, false, err
-	}
-	return result, true, nil
+	return toString(connection.Do(getCommand, key))
 }
 
 // Exists checks how many keys exist
@@ -216,14 +228,7 @@ func (c *Client) HGet(key string, field string) (string, bool, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
-	result, err := redis.String(connection.Do(hGetCommand, key, field))
-	if err == redis.ErrNil {
-		return result, false, nil
-	}
-	if err != nil {
-		return result, false, err
-	}
-	return result, true, nil
+	return toString(connection.Do(hGetCommand, key, field))
 }
 
 // HGetAll retrieves the key
@@ -297,6 +302,17 @@ func (c *Client) HDecrByFloat(key string, field string, decrement float64) (floa
 // Close closes connections pool
 func (c *Client) Close() error {
 	return c.pool.Close()
+}
+
+func toString(reply interface{}, err error) (string, bool, error) {
+	result, err := redis.String(reply, err)
+	if err == redis.ErrNil {
+		return result, false, nil
+	}
+	if err != nil {
+		return result, false, err
+	}
+	return result, true, nil
 }
 
 func newPool(options *Options) *redis.Pool {
