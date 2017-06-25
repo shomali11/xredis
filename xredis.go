@@ -67,19 +67,19 @@ func (c *Client) Ping() (string, error) {
 }
 
 // FlushDb flushes the keys of the current database
-func (c *Client) FlushDb() (string, error) {
+func (c *Client) FlushDb() error {
 	connection := c.GetConnection()
 	defer connection.Close()
 
-	return redis.String(connection.Do(flushDbCommand))
+	return toError(connection.Do(flushDbCommand))
 }
 
 // FlushAll flushes the keys of all databases
-func (c *Client) FlushAll() (string, error) {
+func (c *Client) FlushAll() error {
 	connection := c.GetConnection()
 	defer connection.Close()
 
-	return redis.String(connection.Do(flushAllCommand))
+	return toError(connection.Do(flushAllCommand))
 }
 
 // Echo echoes the message
@@ -99,27 +99,27 @@ func (c *Client) Info() (string, error) {
 }
 
 // Set sets a key/value pair
-func (c *Client) Set(key string, value string) (string, bool, error) {
+func (c *Client) Set(key string, value string) (bool, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
-	return toString(connection.Do(setCommand, key, value))
+	return toBool(connection.Do(setCommand, key, value))
 }
 
 // SetNx sets a key/value pair if the key does not exist
-func (c *Client) SetNx(key string, value string) (string, bool, error) {
+func (c *Client) SetNx(key string, value string) (bool, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
-	return toString(connection.Do(setCommand, key, value, notExistsOption))
+	return toBool(connection.Do(setCommand, key, value, notExistsOption))
 }
 
 // SetEx sets a key/value pair with a timeout in seconds
-func (c *Client) SetEx(key string, value string, timeout int) (string, bool, error) {
+func (c *Client) SetEx(key string, value string, timeout int) (bool, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
-	return toString(connection.Do(setCommand, key, value, expireOption, timeout))
+	return toBool(connection.Do(setCommand, key, value, expireOption, timeout))
 }
 
 // Get retrieves a key's value
@@ -304,13 +304,23 @@ func (c *Client) Close() error {
 	return c.pool.Close()
 }
 
+func toError(reply interface{}, err error) error {
+	_, _, e := toString(reply, err)
+	return e
+}
+
+func toBool(reply interface{}, err error) (bool, error) {
+	_, ok, e := toString(reply, err)
+	return ok, e
+}
+
 func toString(reply interface{}, err error) (string, bool, error) {
-	result, err := redis.String(reply, err)
-	if err == redis.ErrNil {
+	result, e := redis.String(reply, err)
+	if e == redis.ErrNil {
 		return result, false, nil
 	}
-	if err != nil {
-		return result, false, err
+	if e != nil {
+		return result, false, e
 	}
 	return result, true, nil
 }

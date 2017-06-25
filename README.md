@@ -165,8 +165,8 @@ func main() {
 
 	fmt.Println(client.Ping())         // PONG <nil>
 	fmt.Println(client.Echo("Hello"))  // Hello <nil>
-	fmt.Println(client.FlushDb())      // OK <nil>
-	fmt.Println(client.FlushAll())     // OK <nil>
+	fmt.Println(client.FlushDb())      // <nil>
+	fmt.Println(client.FlushAll())     // <nil>
 	fmt.Println(client.Info())         
 }
 ```
@@ -188,9 +188,9 @@ func main() {
 	client := xredis.DefaultClient()
 	defer client.Close()
 
-	fmt.Println(client.Set("name", "Raed Shomali")) // OK <nil>
-	fmt.Println(client.SetNx("name", "Hello"))      // "" false <nil>
-	fmt.Println(client.SetEx("id", "10", 1))        // OK true <nil>
+	fmt.Println(client.Set("name", "Raed Shomali")) // true <nil>
+	fmt.Println(client.SetNx("name", "Hello"))      // false <nil>
+	fmt.Println(client.SetEx("id", "10", 1))        // true <nil>
 	fmt.Println(client.Keys("*"))                   // [id name] <nil>
 	fmt.Println(client.Get("name"))                 // "Raed Shomali" true <nil>
 	fmt.Println(client.Exists("name"))              // true <nil>
@@ -217,8 +217,8 @@ func main() {
 	client := xredis.DefaultClient()
 	defer client.Close()
 
-	fmt.Println(client.Set("integer", "10"))       // OK <nil>
-	fmt.Println(client.Set("float", "5.5"))        // OK <nil>
+	fmt.Println(client.Set("integer", "10"))       // true <nil>
+	fmt.Println(client.Set("float", "5.5"))        // true <nil>
 
 	fmt.Println(client.Get("integer"))             // 10 true <nil>
 	fmt.Println(client.Get("float"))               // 5.5 true <nil>

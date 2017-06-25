@@ -54,8 +54,7 @@ func TestClient_FlushDb(t *testing.T) {
 
 	client := mockClient(connection)
 
-	result, err := client.FlushDb()
-	assert.Equal(t, result, "OK")
+	err := client.FlushDb()
 	assert.Nil(t, err)
 }
 
@@ -65,8 +64,7 @@ func TestClient_FlushAll(t *testing.T) {
 
 	client := mockClient(connection)
 
-	result, err := client.FlushAll()
-	assert.Equal(t, result, "OK")
+	err := client.FlushAll()
 	assert.Nil(t, err)
 }
 
@@ -76,8 +74,7 @@ func TestClient_Set(t *testing.T) {
 
 	client := mockClient(connection)
 
-	result, ok, err := client.Set("key", "value")
-	assert.Equal(t, result, "OK")
+	ok, err := client.Set("key", "value")
 	assert.True(t, ok)
 	assert.Nil(t, err)
 }
@@ -88,8 +85,7 @@ func TestClient_SetNx(t *testing.T) {
 
 	client := mockClient(connection)
 
-	result, ok, err := client.SetNx("key", "value")
-	assert.Equal(t, result, "OK")
+	ok, err := client.SetNx("key", "value")
 	assert.True(t, ok)
 	assert.Nil(t, err)
 
@@ -97,8 +93,7 @@ func TestClient_SetNx(t *testing.T) {
 
 	client = mockClient(connection)
 
-	result, ok, err = client.SetNx("key", "value")
-	assert.Equal(t, result, "")
+	ok, err = client.SetNx("key", "value")
 	assert.False(t, ok)
 	assert.Nil(t, err)
 }
@@ -109,8 +104,7 @@ func TestClient_SetEx(t *testing.T) {
 
 	client := mockClient(connection)
 
-	result, ok, err := client.SetEx("key", "value", 1)
-	assert.Equal(t, result, "OK")
+	ok, err := client.SetEx("key", "value", 1)
 	assert.True(t, ok)
 	assert.Nil(t, err)
 
@@ -118,8 +112,7 @@ func TestClient_SetEx(t *testing.T) {
 
 	client = mockClient(connection)
 
-	result, ok, err = client.SetEx("key", "value", 1)
-	assert.Equal(t, result, "")
+	ok, err = client.SetEx("key", "value", 1)
 	assert.False(t, ok)
 	assert.NotNil(t, err)
 }
