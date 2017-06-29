@@ -20,6 +20,7 @@ const (
 	hGetCommand         = "HGET"
 	hDelCommand         = "HDEL"
 	hKeysCommand        = "HKEYS"
+	expireCommand       = "EXPIRE"
 	flushDbCommand      = "FLUSHDB"
 	flushAllCommand     = "FLUSHALL"
 	existsCommand       = "EXISTS"
@@ -96,6 +97,15 @@ func (c *Client) Info() (string, error) {
 	defer connection.Close()
 
 	return redis.String(connection.Do(infoCommand))
+}
+
+// Expire sets a key's timeout in seconds
+func (c *Client) Expire(key string, timeout int) (bool, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	count, err := redis.Int64(connection.Do(expireCommand, key, timeout))
+	return count > 0, err
 }
 
 // Set sets a key/value pair

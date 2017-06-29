@@ -12,6 +12,8 @@ func main() {
 	fmt.Println(client.Set("name", "Raed Shomali"))
 	fmt.Println(client.SetNx("name", "Hello"))
 	fmt.Println(client.SetEx("id", "10", 1))
+	fmt.Println(client.Expire("name", 1))
+	fmt.Println(client.Expire("unknown", 1))
 	fmt.Println(client.Keys("*"))
 	fmt.Println(client.Get("name"))
 	fmt.Println(client.Exists("name"))

@@ -11,7 +11,7 @@ Built on top of [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
     * `redigo`'s `redis.Pool`
 * Connection pool provided automatically
 * Supports the following Redis commands
-    * **ECHO**, **INFO**, **PING**, **FLUSH**, **FLUSHALL**
+    * **ECHO**, **INFO**, **PING**, **FLUSH**, **FLUSHALL**, **EXPIRE**
     * **SET**, **SETEX**, **SETNX**, **GET**, **DEL**, **EXISTS**, **KEYS**
     * **HSET**, **HGET**, **HGETALL**, **HDEL**, **HEXISTS**, **HKEYS**
     * **INCR**, **INCRBY**, **INCRBYFLOAT**, **DECR**, **DECRBY**, **DECRBYFLOAT**
@@ -173,7 +173,7 @@ func main() {
 
 ## Example 5
 
-Using the `Set`, `Keys`, `Get`, `Exists` and `Del` commands to show how to set, get and delete keys and values.
+Using the `Set`, `Keys`, `Get`, `Exists`, `Expire` and `Del` commands to show how to set, get and delete keys and values.
 _Note that the `Get` returns 3 values, a `string` result, a `bool` that determines whether the key exists and an `error`_
 
 ```go
@@ -191,6 +191,8 @@ func main() {
 	fmt.Println(client.Set("name", "Raed Shomali")) // true <nil>
 	fmt.Println(client.SetNx("name", "Hello"))      // false <nil>
 	fmt.Println(client.SetEx("id", "10", 1))        // true <nil>
+	fmt.Println(client.Expire("name", 1))           // true <nil>
+	fmt.Println(client.Expire("unknown", 1))        // false <nil>
 	fmt.Println(client.Keys("*"))                   // [id name] <nil>
 	fmt.Println(client.Get("name"))                 // "Raed Shomali" true <nil>
 	fmt.Println(client.Exists("name"))              // true <nil>

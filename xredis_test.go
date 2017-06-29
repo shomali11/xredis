@@ -48,6 +48,25 @@ func TestClient_Echo(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestClient_Expire(t *testing.T) {
+	connection := redigomock.NewConn()
+	connection.Command("EXPIRE", "name", 10).Expect(int64(1))
+
+	client := mockClient(connection)
+
+	ok, err := client.Expire("name", 10)
+	assert.True(t, ok)
+	assert.Nil(t, err)
+
+	connection.Command("EXPIRE", "unknown", 10).Expect(int64(0))
+
+	client = mockClient(connection)
+
+	ok, err = client.Expire("unknown", 10)
+	assert.False(t, ok)
+	assert.Nil(t, err)
+}
+
 func TestClient_FlushDb(t *testing.T) {
 	connection := redigomock.NewConn()
 	connection.Command("FLUSHDB").Expect("OK")
