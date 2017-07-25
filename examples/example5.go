@@ -21,4 +21,9 @@ func main() {
 	fmt.Println(client.Exists("name"))
 	fmt.Println(client.Get("name"))
 	fmt.Println(client.Del("name"))
+	fmt.Println(client.Append("name", "a"))
+	fmt.Println(client.Append("name", "b"))
+	fmt.Println(client.Append("name", "c"))
+	fmt.Println(client.Get("name"))
+	fmt.Println(client.Del("name"))
 }

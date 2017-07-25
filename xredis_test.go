@@ -48,6 +48,25 @@ func TestClient_Echo(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestClient_Append(t *testing.T) {
+	connection := redigomock.NewConn()
+	connection.Command("APPEND", "name", "a").Expect(int64(1))
+
+	client := mockClient(connection)
+
+	number, err := client.Append("name", "a")
+	assert.Equal(t, number, int64(1))
+	assert.Nil(t, err)
+
+	connection.Command("APPEND", "name", "b").Expect(int64(2))
+
+	client = mockClient(connection)
+
+	number, err = client.Append("name", "b")
+	assert.Equal(t, number, int64(2))
+	assert.Nil(t, err)
+}
+
 func TestClient_Expire(t *testing.T) {
 	connection := redigomock.NewConn()
 	connection.Command("EXPIRE", "name", 10).Expect(int64(1))
