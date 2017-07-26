@@ -17,7 +17,7 @@ const (
 	defaultReadTimeout           = time.Second
 	defaultConnectionIdleTimeout = 240 * time.Second
 	defaultConnectionMaxIdle     = 100
-	defaultConnectionMaxActive   = 1000
+	defaultConnectionMaxActive   = 10000
 	defaultTestOnBorrowTimeout   = time.Minute
 
 	addressFormat = "%s:%d"
