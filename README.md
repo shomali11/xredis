@@ -262,8 +262,8 @@ func main() {
 	client := xredis.DefaultClient()
 	defer client.Close()
 
-	fmt.Println(client.HSet("hash", "name", "Raed Shomali")) // 1 <nil>
-	fmt.Println(client.HSet("hash", "sport", "Football"))    // 1 <nil>
+	fmt.Println(client.HSet("hash", "name", "Raed Shomali")) // true <nil>
+	fmt.Println(client.HSet("hash", "sport", "Football"))    // true <nil>
 	fmt.Println(client.HKeys("hash"))                        // [name sport] <nil>
 	fmt.Println(client.HGet("hash", "name"))                 // "Raed Shomali" true <nil>
 	fmt.Println(client.HGetAll("hash"))                      // map[name:Raed Shomali sport:Football] <nil>
@@ -293,8 +293,8 @@ func main() {
 	client := xredis.DefaultClient()
 	defer client.Close()
 
-	fmt.Println(client.HSet("hash", "integer", "10"))       // 1 <nil>
-	fmt.Println(client.HSet("hash", "float", "5.5"))        // 1 <nil>
+	fmt.Println(client.HSet("hash", "integer", "10"))       // true <nil>
+	fmt.Println(client.HSet("hash", "float", "5.5"))        // true <nil>
 
 	fmt.Println(client.HIncr("hash", "integer"))            // 11 <nil>
 	fmt.Println(client.HIncrBy("hash", "integer", 10))      // 21 <nil>

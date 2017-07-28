@@ -109,7 +109,7 @@ func (c *Client) Append(key string, value string) (int64, error) {
 }
 
 // Expire sets a key's timeout in seconds
-func (c *Client) Expire(key string, timeout int) (bool, error) {
+func (c *Client) Expire(key string, timeout int64) (bool, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
@@ -134,7 +134,7 @@ func (c *Client) SetNx(key string, value string) (bool, error) {
 }
 
 // SetEx sets a key/value pair with a timeout in seconds
-func (c *Client) SetEx(key string, value string, timeout int) (bool, error) {
+func (c *Client) SetEx(key string, value string, timeout int64) (bool, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
@@ -188,7 +188,7 @@ func (c *Client) Incr(key string) (int64, error) {
 }
 
 // IncrBy increments the key's value by the increment provided
-func (c *Client) IncrBy(key string, increment int) (int64, error) {
+func (c *Client) IncrBy(key string, increment int64) (int64, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
@@ -209,7 +209,7 @@ func (c *Client) Decr(key string) (int64, error) {
 }
 
 // DecrBy decrements the key's value by the decrement provided
-func (c *Client) DecrBy(key string, decrement int) (int64, error) {
+func (c *Client) DecrBy(key string, decrement int64) (int64, error) {
 	return c.IncrBy(key, -decrement)
 }
 
@@ -219,11 +219,12 @@ func (c *Client) DecrByFloat(key string, decrement float64) (float64, error) {
 }
 
 // HSet sets a key's field/value pair
-func (c *Client) HSet(key string, field string, value string) (int, error) {
+func (c *Client) HSet(key string, field string, value string) (bool, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
-	return redis.Int(connection.Do(hSetCommand, key, field, value))
+	code, err := redis.Int(connection.Do(hSetCommand, key, field, value))
+	return code > 0, err
 }
 
 // HKeys retrieves a hash's keys
@@ -288,7 +289,7 @@ func (c *Client) HIncr(key string, field string) (int64, error) {
 }
 
 // HIncrBy increments the key's field's value by the increment provided
-func (c *Client) HIncrBy(key string, field string, increment int) (int64, error) {
+func (c *Client) HIncrBy(key string, field string, increment int64) (int64, error) {
 	connection := c.GetConnection()
 	defer connection.Close()
 
@@ -309,7 +310,7 @@ func (c *Client) HDecr(key string, field string) (int64, error) {
 }
 
 // HDecrBy decrements the key's field's value by the decrement provided
-func (c *Client) HDecrBy(key string, field string, decrement int) (int64, error) {
+func (c *Client) HDecrBy(key string, field string, decrement int64) (int64, error) {
 	return c.HIncrBy(key, field, -decrement)
 }
 

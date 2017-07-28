@@ -69,7 +69,7 @@ func TestClient_Append(t *testing.T) {
 
 func TestClient_Expire(t *testing.T) {
 	connection := redigomock.NewConn()
-	connection.Command("EXPIRE", "name", 10).Expect(int64(1))
+	connection.Command("EXPIRE", "name", int64(10)).Expect(int64(1))
 
 	client := mockClient(connection)
 
@@ -77,7 +77,7 @@ func TestClient_Expire(t *testing.T) {
 	assert.True(t, ok)
 	assert.Nil(t, err)
 
-	connection.Command("EXPIRE", "unknown", 10).Expect(int64(0))
+	connection.Command("EXPIRE", "unknown", int64(10)).Expect(int64(0))
 
 	client = mockClient(connection)
 
@@ -138,7 +138,7 @@ func TestClient_SetNx(t *testing.T) {
 
 func TestClient_SetEx(t *testing.T) {
 	connection := redigomock.NewConn()
-	connection.Command("SET", "key", "value", "EX", 1).Expect("OK")
+	connection.Command("SET", "key", "value", "EX", int64(1)).Expect("OK")
 
 	client := mockClient(connection)
 
@@ -146,7 +146,7 @@ func TestClient_SetEx(t *testing.T) {
 	assert.True(t, ok)
 	assert.Nil(t, err)
 
-	connection.Command("SET", "key", "value", "EX", 1).ExpectError(errors.New("Opps"))
+	connection.Command("SET", "key", "value", "EX", int64(1)).ExpectError(errors.New("Opps"))
 
 	client = mockClient(connection)
 
@@ -220,7 +220,7 @@ func TestClient_Exists(t *testing.T) {
 func TestClient_Incr(t *testing.T) {
 	connection := redigomock.NewConn()
 
-	connection.Command("INCRBY", "key", 1).Expect(int64(1))
+	connection.Command("INCRBY", "key", int64(1)).Expect(int64(1))
 	client := mockClient(connection)
 
 	result, err := client.Incr("key")
@@ -231,7 +231,7 @@ func TestClient_Incr(t *testing.T) {
 func TestClient_IncrBy(t *testing.T) {
 	connection := redigomock.NewConn()
 
-	connection.Command("INCRBY", "key", 10).Expect(int64(10))
+	connection.Command("INCRBY", "key", int64(10)).Expect(int64(10))
 	client := mockClient(connection)
 
 	result, err := client.IncrBy("key", 10)
@@ -253,7 +253,7 @@ func TestClient_IncrByFloat(t *testing.T) {
 func TestClient_Decr(t *testing.T) {
 	connection := redigomock.NewConn()
 
-	connection.Command("INCRBY", "key", -1).Expect(int64(-1))
+	connection.Command("INCRBY", "key", int64(-1)).Expect(int64(-1))
 	client := mockClient(connection)
 
 	result, err := client.Decr("key")
@@ -264,7 +264,7 @@ func TestClient_Decr(t *testing.T) {
 func TestClient_DecrBy(t *testing.T) {
 	connection := redigomock.NewConn()
 
-	connection.Command("INCRBY", "key", -10).Expect(int64(-10))
+	connection.Command("INCRBY", "key", int64(-10)).Expect(int64(-10))
 	client := mockClient(connection)
 
 	result, err := client.DecrBy("key", 10)
@@ -290,7 +290,7 @@ func TestClient_HSet(t *testing.T) {
 	client := mockClient(connection)
 
 	result, err := client.HSet("key", "field", "value")
-	assert.Equal(t, result, int(1))
+	assert.Equal(t, result, true)
 	assert.Nil(t, err)
 }
 
@@ -378,7 +378,7 @@ func TestClient_HExists(t *testing.T) {
 func TestClient_HIncr(t *testing.T) {
 	connection := redigomock.NewConn()
 
-	connection.Command("HINCRBY", "key", "field", 1).Expect(int64(1))
+	connection.Command("HINCRBY", "key", "field", int64(1)).Expect(int64(1))
 	client := mockClient(connection)
 
 	result, err := client.HIncr("key", "field")
@@ -389,7 +389,7 @@ func TestClient_HIncr(t *testing.T) {
 func TestClient_HIncrBy(t *testing.T) {
 	connection := redigomock.NewConn()
 
-	connection.Command("HINCRBY", "key", "field", 10).Expect(int64(10))
+	connection.Command("HINCRBY", "key", "field", int64(10)).Expect(int64(10))
 	client := mockClient(connection)
 
 	result, err := client.HIncrBy("key", "field", 10)
@@ -411,7 +411,7 @@ func TestClient_HIncrByFloat(t *testing.T) {
 func TestClient_HDecr(t *testing.T) {
 	connection := redigomock.NewConn()
 
-	connection.Command("HINCRBY", "key", "field", -1).Expect(int64(-1))
+	connection.Command("HINCRBY", "key", "field", int64(-1)).Expect(int64(-1))
 	client := mockClient(connection)
 
 	result, err := client.HDecr("key", "field")
@@ -422,7 +422,7 @@ func TestClient_HDecr(t *testing.T) {
 func TestClient_HDecrBy(t *testing.T) {
 	connection := redigomock.NewConn()
 
-	connection.Command("HINCRBY", "key", "field", -10).Expect(int64(-10))
+	connection.Command("HINCRBY", "key", "field", int64(-10)).Expect(int64(-10))
 	client := mockClient(connection)
 
 	result, err := client.HDecrBy("key", "field", 10)
