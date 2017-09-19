@@ -3,6 +3,7 @@ package xredis
 import (
 	"crypto/tls"
 	"fmt"
+	"github.com/garyburd/redigo/redis"
 	"time"
 )
 
@@ -156,4 +157,55 @@ func (o *Options) GetTestOnBorrowPeriod() time.Duration {
 		return defaultTestOnBorrowTimeout
 	}
 	return o.TestOnBorrowPeriod
+}
+
+func newServerPool(options *Options) *redis.Pool {
+	connectionIdleTimeout := options.GetConnectionIdleTimeout()
+	connectionMaxActive := options.GetConnectionMaxActive()
+	connectionMaxIdle := options.GetConnectionMaxIdle()
+	connectionWait := options.GetConnectionWait()
+
+	return &redis.Pool{
+		IdleTimeout:  connectionIdleTimeout,
+		MaxActive:    connectionMaxActive,
+		MaxIdle:      connectionMaxIdle,
+		Wait:         connectionWait,
+		Dial:         serverDial(options),
+		TestOnBorrow: serverTestOnBorrow(options),
+	}
+}
+
+func serverDial(options *Options) func() (redis.Conn, error) {
+	network := options.GetNetwork()
+	address := options.GetAddress()
+
+	dialOptions := make([]redis.DialOption, 7)
+	dialOptions[0] = redis.DialPassword(options.GetPassword())
+	dialOptions[1] = redis.DialDatabase(options.GetDatabase())
+	dialOptions[2] = redis.DialConnectTimeout(options.GetConnectTimeout())
+	dialOptions[3] = redis.DialWriteTimeout(options.GetWriteTimeout())
+	dialOptions[4] = redis.DialReadTimeout(options.GetReadTimeout())
+	dialOptions[5] = redis.DialTLSSkipVerify(options.GetTlsSkipVerify())
+	dialOptions[6] = redis.DialTLSConfig(options.GetTlsConfig())
+
+	return func() (redis.Conn, error) {
+		connection, err := redis.Dial(network, address, dialOptions...)
+		if err != nil {
+			return nil, err
+		}
+		return connection, nil
+	}
+}
+
+func serverTestOnBorrow(options *Options) func(redis.Conn, time.Time) error {
+	period := options.GetTestOnBorrowPeriod()
+
+	return func(connection redis.Conn, t time.Time) error {
+		if time.Since(t) < period {
+			return nil
+		}
+
+		_, err := connection.Do(pingCommand)
+		return err
+	}
 }

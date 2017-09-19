@@ -2,18 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/garyburd/redigo/redis"
 	"github.com/shomali11/xredis"
 )
 
 func main() {
-	pool := &redis.Pool{
-		Dial: func() (redis.Conn, error) {
-			return redis.Dial("tcp", "localhost:6379")
-		},
+	options := &xredis.SentinelOptions{
+		Addresses:  []string{"localhost:26379"},
+		MasterName: "master",
 	}
 
-	client := xredis.NewClient(pool)
+	client := xredis.SetupSentinelClient(options)
 	defer client.Close()
 
 	fmt.Println(client.Ping())

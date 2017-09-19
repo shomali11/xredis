@@ -122,6 +122,52 @@ type Options struct {
 
 ## Example 3
 
+Using `SetupSentinelClient` to create a redis sentinel client using provided options
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/shomali11/xredis"
+)
+
+func main() {
+	options := &xredis.SentinelOptions{
+		Addresses:  []string{"localhost:26379"},
+		MasterName: "master",
+	}
+
+	client := xredis.SetupSentinelClient(options)
+	defer client.Close()
+
+	fmt.Println(client.Ping()) // PONG <nil>
+}
+```
+
+Available options to set
+
+```go
+type SentinelOptions struct {
+	Addresses             []string
+	MasterName            string
+	Password              string
+	Database              int
+	Network               string
+	ConnectTimeout        time.Duration
+	WriteTimeout          time.Duration
+	ReadTimeout           time.Duration
+	ConnectionIdleTimeout time.Duration
+	ConnectionMaxIdle     int
+	ConnectionMaxActive   int
+	ConnectionWait        bool
+	TlsConfig             *tls.Config
+	TlsSkipVerify         bool
+}
+```
+
+## Example 4
+
 Using `NewClient` to create a redis client using `redigo`'s `redis.Pool`
 
 ```go
@@ -147,7 +193,7 @@ func main() {
 }
 ```
 
-## Example 4
+## Example 5
 
 Using the `Ping`, `Echo` & `Info` commands to ping, echo messages and return redis' information and statistics
 
@@ -171,7 +217,7 @@ func main() {
 }
 ```
 
-## Example 5
+## Example 6
 
 Using the `Set`, `Keys`, `Get`, `Exists`, `Expire`, `Append` and `Del` commands to show how to set, get and delete keys and values.
 _Note that the `Get` returns 3 values, a `string` result, a `bool` that determines whether the key exists and an `error`_
@@ -208,7 +254,7 @@ func main() {
 }
 ```
 
-## Example 6
+## Example 7
 
 Using the `Incr`, `IncrBy`, `IncrByFloat`, `Decr`, `DecrBy`, `DecrByFloat` commands, we can increment and decrement a key's value
 
@@ -245,7 +291,7 @@ func main() {
 }
 ```
 
-## Example 7
+## Example 8
 
 Using the `HSet`, `HKeys`, `HGet`, `HGetAll`, `HExists` and `HDel` commands to show how to set, get and delete hash keys, fields and values.
 _Note that the `HGetAll` returns 2 values, a `map[string]string` result and an `error`_
@@ -277,7 +323,7 @@ func main() {
 }
 ```
 
-## Example 8
+## Example 9
 
 Using the `HIncr`, `HIncrBy`, `HIncrByFloat`,`HDecr`, `HDecrBy` and `HDecrByFloat` commands to show how to increment and decrement hash fields' values.
 
@@ -308,7 +354,7 @@ func main() {
 }
 ```
 
-## Example 9
+## Example 10
 
 Can't find the command you want? You have full access to `redigo`'s API.
 

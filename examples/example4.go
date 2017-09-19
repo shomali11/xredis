@@ -2,16 +2,19 @@ package main
 
 import (
 	"fmt"
+	"github.com/garyburd/redigo/redis"
 	"github.com/shomali11/xredis"
 )
 
 func main() {
-	client := xredis.DefaultClient()
+	pool := &redis.Pool{
+		Dial: func() (redis.Conn, error) {
+			return redis.Dial("tcp", "localhost:6379")
+		},
+	}
+
+	client := xredis.NewClient(pool)
 	defer client.Close()
 
 	fmt.Println(client.Ping())
-	fmt.Println(client.Echo("Hello"))
-	fmt.Println(client.FlushDb())
-	fmt.Println(client.FlushAll())
-	fmt.Println(client.Info())
 }

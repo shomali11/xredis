@@ -451,6 +451,11 @@ func TestSetupClient(t *testing.T) {
 	defer client.Close()
 }
 
+func TestSetupSentinelClient(t *testing.T) {
+	client := SetupSentinelClient(&SentinelOptions{})
+	defer client.Close()
+}
+
 func mockClient(connection *redigomock.Conn) *Client {
 	pool := &redis.Pool{
 		Dial: func() (redis.Conn, error) {
