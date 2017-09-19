@@ -10,6 +10,7 @@ Built on top of [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
     * Custom client via set options
     * `redigo`'s `redis.Pool`
 * Connection pool provided automatically
+* Support for Redis Sentinel
 * Supports the following Redis commands
     * **ECHO**, **INFO**, **PING**, **FLUSH**, **FLUSHALL**, **EXPIRE**, **APPEND**
     * **SET**, **SETEX**, **SETNX**, **GET**, **DEL**, **EXISTS**, **KEYS**
@@ -30,6 +31,7 @@ govendor fetch github.com/shomali11/xredis
 ## Dependencies
 
 * `redigo` [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
+* `go-sentinel` [github.com/FZambia/go-sentinel](https://github.com/FZambia/go-sentinel)
 
 # Examples
 
