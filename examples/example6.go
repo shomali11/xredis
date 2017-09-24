@@ -25,5 +25,6 @@ func main() {
 	fmt.Println(client.Append("name", "b"))
 	fmt.Println(client.Append("name", "c"))
 	fmt.Println(client.Get("name"))
+	fmt.Println(client.GetRange("name", 0, 1))
 	fmt.Println(client.Del("name"))
 }

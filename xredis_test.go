@@ -67,6 +67,17 @@ func TestClient_Append(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestClient_GetRange(t *testing.T) {
+	connection := redigomock.NewConn()
+	connection.Command("GETRANGE", "name", 1, 2).Expect("ab")
+
+	client := mockClient(connection)
+
+	number, err := client.GetRange("name", 1, 2)
+	assert.Equal(t, number, "ab")
+	assert.Nil(t, err)
+}
+
 func TestClient_Expire(t *testing.T) {
 	connection := redigomock.NewConn()
 	connection.Command("EXPIRE", "name", int64(10)).Expect(int64(1))
