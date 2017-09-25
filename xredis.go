@@ -21,6 +21,7 @@ const (
 	hKeysCommand        = "HKEYS"
 	appendCommand       = "APPEND"
 	getRangeCommand     = "GETRANGE"
+	setRangeCommand     = "SETRANGE"
 	expireCommand       = "EXPIRE"
 	flushDbCommand      = "FLUSHDB"
 	flushAllCommand     = "FLUSHALL"
@@ -120,6 +121,14 @@ func (c *Client) GetRange(key string, start int, end int) (string, error) {
 	defer connection.Close()
 
 	return redis.String(connection.Do(getRangeCommand, key, start, end))
+}
+
+// SetRange to set a key's value's range
+func (c *Client) SetRange(key string, start int, value string) (int64, error) {
+	connection := c.GetConnection()
+	defer connection.Close()
+
+	return redis.Int64(connection.Do(setRangeCommand, key, start, value))
 }
 
 // Expire sets a key's timeout in seconds

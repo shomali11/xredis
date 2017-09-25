@@ -13,7 +13,7 @@ Built on top of [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
 * Support for Redis Sentinel
 * Supports the following Redis commands
     * **ECHO**, **INFO**, **PING**, **FLUSH**, **FLUSHALL**, **EXPIRE**, **APPEND**
-    * **SET**, **SETEX**, **SETNX**, **GET**, **DEL**, **EXISTS**, **KEYS**, **GETRANGE**
+    * **SET**, **SETEX**, **SETNX**, **GET**, **DEL**, **EXISTS**, **KEYS**, **GETRANGE**, **SETRANGE**
     * **HSET**, **HGET**, **HGETALL**, **HDEL**, **HEXISTS**, **HKEYS**
     * **INCR**, **INCRBY**, **INCRBYFLOAT**, **DECR**, **DECRBY**, **DECRBYFLOAT**
     * **HINCR**, **HINCRBY**, **HINCRBYFLOAT**, **HDECR**, **HDECRBY**, **HDECRBYFLOAT**
@@ -221,7 +221,7 @@ func main() {
 
 ## Example 6
 
-Using the `Set`, `Keys`, `Get`, `Exists`, `Expire`, `Append`, `GetRange` and `Del` commands to show how to set, get and delete keys and values.
+Using the `Set`, `Keys`, `Get`, `Exists`, `Expire`, `Append`, `GetRange`, `SetRange` and `Del` commands to show how to set, get and delete keys and values.
 _Note that the `Get` returns 3 values, a `string` result, a `bool` that determines whether the key exists and an `error`_
 
 ```go
@@ -253,6 +253,8 @@ func main() {
 	fmt.Println(client.Append("name", "c"))         // 3 <nil>
 	fmt.Println(client.Get("name"))                 // "abc" true <nil>
 	fmt.Println(client.GetRange("name", 0 , 1))     // "ab" <nil>
+	fmt.Println(client.SetRange("name", 2, "xyz"))  // 5 <nil>
+	fmt.Println(client.Get("name"))                 // "abxyz" <nil>
 	fmt.Println(client.Del("name"))                 // 1 <nil>
 }
 ```
