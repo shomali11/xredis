@@ -2,16 +2,13 @@ package xredis
 
 import (
 	"crypto/tls"
-	"errors"
 	"github.com/FZambia/go-sentinel"
 	"github.com/garyburd/redigo/redis"
+	"math/rand"
 	"time"
 )
 
 const (
-	masterRole          = "master"
-	connectionRoleError = "connection failed master role check"
-
 	defaultSentinelAddress               = "localhost:26379"
 	defaultSentinelMasterName            = "master"
 	defaultSentinelPassword              = ""
@@ -23,6 +20,7 @@ const (
 	defaultSentinelConnectionIdleTimeout = 240 * time.Second
 	defaultSentinelConnectionMaxIdle     = 100
 	defaultSentinelConnectionMaxActive   = 10000
+	defaultSentinelTestOnBorrowTimeout   = time.Minute
 )
 
 // SentinelOptions contains redis sentinel options
@@ -41,6 +39,7 @@ type SentinelOptions struct {
 	ConnectionWait        bool
 	TlsConfig             *tls.Config
 	TlsSkipVerify         bool
+	TestOnBorrowPeriod    time.Duration
 }
 
 // GetAddresses returns sentinel address
@@ -146,7 +145,15 @@ func (o *SentinelOptions) GetTlsSkipVerify() bool {
 	return o.TlsSkipVerify
 }
 
-func newSentinelPool(options *SentinelOptions) *redis.Pool {
+// GetTestOnBorrowPeriod return test on borrow period
+func (o *SentinelOptions) GetTestOnBorrowPeriod() time.Duration {
+	if o.TestOnBorrowPeriod < 0 {
+		return defaultSentinelTestOnBorrowTimeout
+	}
+	return o.TestOnBorrowPeriod
+}
+
+func newWriteSentinelPool(options *SentinelOptions) *redis.Pool {
 	connectionIdleTimeout := options.GetConnectionIdleTimeout()
 	connectionMaxActive := options.GetConnectionMaxActive()
 	connectionMaxIdle := options.GetConnectionMaxIdle()
@@ -157,12 +164,28 @@ func newSentinelPool(options *SentinelOptions) *redis.Pool {
 		MaxActive:    connectionMaxActive,
 		MaxIdle:      connectionMaxIdle,
 		Wait:         connectionWait,
-		Dial:         sentinelDial(options),
-		TestOnBorrow: sentinelTestOnBorrow(),
+		Dial:         sentinelWriteDial(options),
+		TestOnBorrow: sentinelTestOnBorrow(options),
 	}
 }
 
-func sentinelDial(options *SentinelOptions) func() (redis.Conn, error) {
+func newReadSentinelPool(options *SentinelOptions) *redis.Pool {
+	connectionIdleTimeout := options.GetConnectionIdleTimeout()
+	connectionMaxActive := options.GetConnectionMaxActive()
+	connectionMaxIdle := options.GetConnectionMaxIdle()
+	connectionWait := options.GetConnectionWait()
+
+	return &redis.Pool{
+		IdleTimeout:  connectionIdleTimeout,
+		MaxActive:    connectionMaxActive,
+		MaxIdle:      connectionMaxIdle,
+		Wait:         connectionWait,
+		Dial:         sentinelReadDial(options),
+		TestOnBorrow: sentinelTestOnBorrow(options),
+	}
+}
+
+func createSentinel(options *SentinelOptions) *sentinel.Sentinel {
 	sentinelNetwork := options.GetNetwork()
 
 	dialSentinelOptions := make([]redis.DialOption, 5)
@@ -172,7 +195,7 @@ func sentinelDial(options *SentinelOptions) func() (redis.Conn, error) {
 	dialSentinelOptions[3] = redis.DialTLSSkipVerify(options.GetTlsSkipVerify())
 	dialSentinelOptions[4] = redis.DialTLSConfig(options.GetTlsConfig())
 
-	sentinelDetails := &sentinel.Sentinel{
+	return &sentinel.Sentinel{
 		Addrs:      options.GetAddresses(),
 		MasterName: options.GetMasterName(),
 		Dial: func(address string) (redis.Conn, error) {
@@ -183,6 +206,10 @@ func sentinelDial(options *SentinelOptions) func() (redis.Conn, error) {
 			return connection, nil
 		},
 	}
+}
+
+func sentinelWriteDial(options *SentinelOptions) func() (redis.Conn, error) {
+	sentinelDetails := createSentinel(options)
 
 	network := options.GetNetwork()
 
@@ -209,12 +236,54 @@ func sentinelDial(options *SentinelOptions) func() (redis.Conn, error) {
 	}
 }
 
-func sentinelTestOnBorrow() func(redis.Conn, time.Time) error {
-	return func(connection redis.Conn, t time.Time) error {
-		if !sentinel.TestRole(connection, masterRole) {
-			return errors.New(connectionRoleError)
+func sentinelReadDial(options *SentinelOptions) func() (redis.Conn, error) {
+	sentinelDetails := createSentinel(options)
+
+	network := options.GetNetwork()
+
+	dialServerOptions := make([]redis.DialOption, 7)
+	dialServerOptions[0] = redis.DialPassword(options.GetPassword())
+	dialServerOptions[1] = redis.DialDatabase(options.GetDatabase())
+	dialServerOptions[2] = redis.DialConnectTimeout(options.GetConnectTimeout())
+	dialServerOptions[3] = redis.DialWriteTimeout(options.GetWriteTimeout())
+	dialServerOptions[4] = redis.DialReadTimeout(options.GetReadTimeout())
+	dialServerOptions[5] = redis.DialTLSSkipVerify(options.GetTlsSkipVerify())
+	dialServerOptions[6] = redis.DialTLSConfig(options.GetTlsConfig())
+
+	return func() (redis.Conn, error) {
+		addresses, err := sentinelDetails.SlaveAddrs()
+		if err != nil {
+			return nil, err
+		}
+
+		var address string
+		if len(addresses) > 0 {
+			rand.Seed(time.Now().Unix())
+			address = addresses[rand.Int()%len(addresses)]
 		} else {
+			address, err = sentinelDetails.MasterAddr()
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		connection, err := redis.Dial(network, address, dialServerOptions...)
+		if err != nil {
+			return nil, err
+		}
+		return connection, nil
+	}
+}
+
+func sentinelTestOnBorrow(options *SentinelOptions) func(redis.Conn, time.Time) error {
+	period := options.GetTestOnBorrowPeriod()
+
+	return func(connection redis.Conn, t time.Time) error {
+		if time.Since(t) < period {
 			return nil
 		}
+
+		_, err := connection.Do(pingCommand)
+		return err
 	}
 }

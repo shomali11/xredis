@@ -140,3 +140,14 @@ func TestSentinelOptions_GetTlsSkipVerify(t *testing.T) {
 	options = SentinelOptions{TlsSkipVerify: false}
 	assert.Equal(t, options.GetTlsSkipVerify(), false)
 }
+
+func TestSentinelOptions_GetTestOnBorrowPeriod(t *testing.T) {
+	options := SentinelOptions{TestOnBorrowPeriod: 1}
+	assert.Equal(t, options.GetTestOnBorrowPeriod(), time.Duration(1))
+
+	options = SentinelOptions{TestOnBorrowPeriod: 0}
+	assert.Equal(t, options.GetTestOnBorrowPeriod(), time.Duration(0))
+
+	options = SentinelOptions{TestOnBorrowPeriod: -1}
+	assert.Equal(t, options.GetTestOnBorrowPeriod(), defaultTestOnBorrowTimeout)
+}

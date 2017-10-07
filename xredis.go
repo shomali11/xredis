@@ -37,39 +37,41 @@ const (
 // DefaultClient returns a client with default options
 func DefaultClient() *Client {
 	pool := newServerPool(&Options{})
-	return &Client{pool: pool}
+	return NewClient(pool)
 }
 
 // SetupClient returns a client with provided options
 func SetupClient(options *Options) *Client {
 	pool := newServerPool(options)
-	return &Client{pool: pool}
+	return NewClient(pool)
 }
 
 // SetupSentinelClient returns a client with provided options
 func SetupSentinelClient(options *SentinelOptions) *Client {
-	pool := newSentinelPool(options)
-	return &Client{pool: pool}
+	writePool := newWriteSentinelPool(options)
+	readPool := newReadSentinelPool(options)
+	return &Client{writePool: writePool, readPool: readPool}
 }
 
 // NewClient returns a client using provided redis.Pool
 func NewClient(pool *redis.Pool) *Client {
-	return &Client{pool: pool}
+	return &Client{writePool: pool, readPool: pool}
 }
 
 // Client redis client
 type Client struct {
-	pool *redis.Pool
+	writePool *redis.Pool
+	readPool  *redis.Pool
 }
 
 // GetConnection gets a connection from the pool
 func (c *Client) GetConnection() redis.Conn {
-	return c.pool.Get()
+	return c.writePool.Get()
 }
 
 // Ping pings redis
 func (c *Client) Ping() (string, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	return redis.String(connection.Do(pingCommand))
@@ -77,7 +79,7 @@ func (c *Client) Ping() (string, error) {
 
 // FlushDb flushes the keys of the current database
 func (c *Client) FlushDb() error {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	return toError(connection.Do(flushDbCommand))
@@ -85,7 +87,7 @@ func (c *Client) FlushDb() error {
 
 // FlushAll flushes the keys of all databases
 func (c *Client) FlushAll() error {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	return toError(connection.Do(flushAllCommand))
@@ -93,7 +95,7 @@ func (c *Client) FlushAll() error {
 
 // Echo echoes the message
 func (c *Client) Echo(message string) (string, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	return redis.String(connection.Do(echoCommand, message))
@@ -101,7 +103,7 @@ func (c *Client) Echo(message string) (string, error) {
 
 // Info returns redis information and statistics
 func (c *Client) Info() (string, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	return redis.String(connection.Do(infoCommand))
@@ -109,7 +111,7 @@ func (c *Client) Info() (string, error) {
 
 // Append to a key's value
 func (c *Client) Append(key string, value string) (int64, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	return redis.Int64(connection.Do(appendCommand, key, value))
@@ -117,7 +119,7 @@ func (c *Client) Append(key string, value string) (int64, error) {
 
 // GetRange to get a key's value's range
 func (c *Client) GetRange(key string, start int, end int) (string, error) {
-	connection := c.GetConnection()
+	connection := c.getReadConnection()
 	defer connection.Close()
 
 	return redis.String(connection.Do(getRangeCommand, key, start, end))
@@ -125,7 +127,7 @@ func (c *Client) GetRange(key string, start int, end int) (string, error) {
 
 // SetRange to set a key's value's range
 func (c *Client) SetRange(key string, start int, value string) (int64, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	return redis.Int64(connection.Do(setRangeCommand, key, start, value))
@@ -133,7 +135,7 @@ func (c *Client) SetRange(key string, start int, value string) (int64, error) {
 
 // Expire sets a key's timeout in seconds
 func (c *Client) Expire(key string, timeout int64) (bool, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	count, err := redis.Int64(connection.Do(expireCommand, key, timeout))
@@ -142,7 +144,7 @@ func (c *Client) Expire(key string, timeout int64) (bool, error) {
 
 // Set sets a key/value pair
 func (c *Client) Set(key string, value string) (bool, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	return toBool(connection.Do(setCommand, key, value))
@@ -150,7 +152,7 @@ func (c *Client) Set(key string, value string) (bool, error) {
 
 // SetNx sets a key/value pair if the key does not exist
 func (c *Client) SetNx(key string, value string) (bool, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	return toBool(connection.Do(setCommand, key, value, notExistsOption))
@@ -158,7 +160,7 @@ func (c *Client) SetNx(key string, value string) (bool, error) {
 
 // SetEx sets a key/value pair with a timeout in seconds
 func (c *Client) SetEx(key string, value string, timeout int64) (bool, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	return toBool(connection.Do(setCommand, key, value, expireOption, timeout))
@@ -166,7 +168,7 @@ func (c *Client) SetEx(key string, value string, timeout int64) (bool, error) {
 
 // Get retrieves a key's value
 func (c *Client) Get(key string) (string, bool, error) {
-	connection := c.GetConnection()
+	connection := c.getReadConnection()
 	defer connection.Close()
 
 	return toString(connection.Do(getCommand, key))
@@ -174,7 +176,7 @@ func (c *Client) Get(key string) (string, bool, error) {
 
 // Exists checks how many keys exist
 func (c *Client) Exists(keys ...string) (bool, error) {
-	connection := c.GetConnection()
+	connection := c.getReadConnection()
 	defer connection.Close()
 
 	interfaces := make([]interface{}, len(keys))
@@ -187,7 +189,7 @@ func (c *Client) Exists(keys ...string) (bool, error) {
 
 // Del deletes keys
 func (c *Client) Del(keys ...string) (int64, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	interfaces := make([]interface{}, len(keys))
@@ -199,7 +201,7 @@ func (c *Client) Del(keys ...string) (int64, error) {
 
 // Keys retrieves keys that match a pattern
 func (c *Client) Keys(pattern string) ([]string, error) {
-	connection := c.GetConnection()
+	connection := c.getReadConnection()
 	defer connection.Close()
 
 	return redis.Strings(connection.Do(keysCommand, pattern))
@@ -212,7 +214,7 @@ func (c *Client) Incr(key string) (int64, error) {
 
 // IncrBy increments the key's value by the increment provided
 func (c *Client) IncrBy(key string, increment int64) (int64, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	return redis.Int64(connection.Do(incrByCommand, key, increment))
@@ -220,7 +222,7 @@ func (c *Client) IncrBy(key string, increment int64) (int64, error) {
 
 // IncrByFloat increments the key's value by the increment provided
 func (c *Client) IncrByFloat(key string, increment float64) (float64, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	return redis.Float64(connection.Do(incrByFloatCommand, key, increment))
@@ -243,7 +245,7 @@ func (c *Client) DecrByFloat(key string, decrement float64) (float64, error) {
 
 // HSet sets a key's field/value pair
 func (c *Client) HSet(key string, field string, value string) (bool, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	code, err := redis.Int(connection.Do(hSetCommand, key, field, value))
@@ -252,7 +254,7 @@ func (c *Client) HSet(key string, field string, value string) (bool, error) {
 
 // HKeys retrieves a hash's keys
 func (c *Client) HKeys(key string) ([]string, error) {
-	connection := c.GetConnection()
+	connection := c.getReadConnection()
 	defer connection.Close()
 
 	return redis.Strings(connection.Do(hKeysCommand, key))
@@ -260,7 +262,7 @@ func (c *Client) HKeys(key string) ([]string, error) {
 
 // HExists determine's a key's field's existence
 func (c *Client) HExists(key string, field string) (bool, error) {
-	connection := c.GetConnection()
+	connection := c.getReadConnection()
 	defer connection.Close()
 
 	return redis.Bool(connection.Do(hExistsCommand, key, field))
@@ -268,7 +270,7 @@ func (c *Client) HExists(key string, field string) (bool, error) {
 
 // HGet retrieves a key's field's value
 func (c *Client) HGet(key string, field string) (string, bool, error) {
-	connection := c.GetConnection()
+	connection := c.getReadConnection()
 	defer connection.Close()
 
 	return toString(connection.Do(hGetCommand, key, field))
@@ -276,7 +278,7 @@ func (c *Client) HGet(key string, field string) (string, bool, error) {
 
 // HGetAll retrieves the key
 func (c *Client) HGetAll(key string) (map[string]string, error) {
-	connection := c.GetConnection()
+	connection := c.getReadConnection()
 	defer connection.Close()
 
 	results, err := redis.Strings(connection.Do(hGetAllCommand, key))
@@ -295,7 +297,7 @@ func (c *Client) HGetAll(key string) (map[string]string, error) {
 
 // HDel deletes a key's fields
 func (c *Client) HDel(key string, fields ...string) (int64, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	interfaces := make([]interface{}, len(fields)+1)
@@ -313,7 +315,7 @@ func (c *Client) HIncr(key string, field string) (int64, error) {
 
 // HIncrBy increments the key's field's value by the increment provided
 func (c *Client) HIncrBy(key string, field string, increment int64) (int64, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	return redis.Int64(connection.Do(hIncrByCommand, key, field, increment))
@@ -321,7 +323,7 @@ func (c *Client) HIncrBy(key string, field string, increment int64) (int64, erro
 
 // HIncrByFloat increments the key's field's value by the increment provided
 func (c *Client) HIncrByFloat(key string, field string, increment float64) (float64, error) {
-	connection := c.GetConnection()
+	connection := c.getWriteConnection()
 	defer connection.Close()
 
 	return redis.Float64(connection.Do(hIncrByFloatCommand, key, field, increment))
@@ -342,9 +344,22 @@ func (c *Client) HDecrByFloat(key string, field string, decrement float64) (floa
 	return c.HIncrByFloat(key, field, -decrement)
 }
 
-// Close closes connections pool
+// Close closes connections writePool
 func (c *Client) Close() error {
-	return c.pool.Close()
+	err := c.writePool.Close()
+	if err != nil {
+		return err
+	}
+
+	return c.readPool.Close()
+}
+
+func (c *Client) getWriteConnection() redis.Conn {
+	return c.writePool.Get()
+}
+
+func (c *Client) getReadConnection() redis.Conn {
+	return c.readPool.Get()
 }
 
 func toError(reply interface{}, err error) error {

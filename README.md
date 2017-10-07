@@ -11,6 +11,8 @@ Built on top of [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
     * `redigo`'s `redis.Pool`
 * Connection pool provided automatically
 * Support for Redis Sentinel
+    * Writes go to the Master
+    * Reads go to the Slaves. Falls back on Master if none are available.
 * Supports the following Redis commands
     * **ECHO**, **INFO**, **PING**, **FLUSH**, **FLUSHALL**, **EXPIRE**, **APPEND**
     * **SET**, **SETEX**, **SETNX**, **GET**, **DEL**, **EXISTS**, **KEYS**, **GETRANGE**, **SETRANGE**
