@@ -28,5 +28,6 @@ func main() {
 	fmt.Println(client.GetRange("name", 0, 1))
 	fmt.Println(client.SetRange("name", 2, "xyz"))
 	fmt.Println(client.Get("name"))
-	fmt.Println(client.Del("name"))
+	fmt.Println(client.Scan(0, "*"))
+	fmt.Println(client.Del("id", "name"))
 }

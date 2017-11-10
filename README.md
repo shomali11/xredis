@@ -15,8 +15,8 @@ Built on top of [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
     * Reads go to the Slaves. Falls back on Master if none are available.
 * Supports the following Redis commands
     * **ECHO**, **INFO**, **PING**, **FLUSH**, **FLUSHALL**, **EXPIRE**, **APPEND**
-    * **SET**, **SETEX**, **SETNX**, **GET**, **DEL**, **EXISTS**, **KEYS**, **GETRANGE**, **SETRANGE**
-    * **HSET**, **HGET**, **HGETALL**, **HDEL**, **HEXISTS**, **HKEYS**
+    * **SET**, **SETEX**, **SETNX**, **GET**, **DEL**, **EXISTS**, **KEYS**, **SCAN**, **GETRANGE**, **SETRANGE**
+    * **HSET**, **HGET**, **HGETALL**, **HDEL**, **HEXISTS**, **HKEYS**, **HSCAN**
     * **INCR**, **INCRBY**, **INCRBYFLOAT**, **DECR**, **DECRBY**, **DECRBYFLOAT**
     * **HINCR**, **HINCRBY**, **HINCRBYFLOAT**, **HDECR**, **HDECRBY**, **HDECRBYFLOAT**
     * _More coming soon_
@@ -257,7 +257,8 @@ func main() {
 	fmt.Println(client.GetRange("name", 0 , 1))     // "ab" <nil>
 	fmt.Println(client.SetRange("name", 2, "xyz"))  // 5 <nil>
 	fmt.Println(client.Get("name"))                 // "abxyz" <nil>
-	fmt.Println(client.Del("name"))                 // 1 <nil>
+	fmt.Println(client.Scan(0, "*"))                // 0 [name id] <nil>
+	fmt.Println(client.Del("id", "name"))           // 2 <nil>
 }
 ```
 
@@ -318,6 +319,7 @@ func main() {
 	fmt.Println(client.HSet("hash", "name", "Raed Shomali")) // true <nil>
 	fmt.Println(client.HSet("hash", "sport", "Football"))    // true <nil>
 	fmt.Println(client.HKeys("hash"))                        // [name sport] <nil>
+	fmt.Println(client.HScan("hash", 0, "*"))                // 0 [name Raed Shomali sport Football] <nil>
 	fmt.Println(client.HGet("hash", "name"))                 // "Raed Shomali" true <nil>
 	fmt.Println(client.HGetAll("hash"))                      // map[name:Raed Shomali sport:Football] <nil>
 	fmt.Println(client.HExists("hash", "name"))              // true <nil>

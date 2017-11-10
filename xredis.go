@@ -2,11 +2,13 @@ package xredis
 
 import (
 	"github.com/garyburd/redigo/redis"
+	"strconv"
 )
 
 const (
 	expireOption    = "EX"
 	notExistsOption = "NX"
+	matchOption     = "MATCH"
 
 	setCommand          = "SET"
 	delCommand          = "DEL"
@@ -19,6 +21,8 @@ const (
 	hGetCommand         = "HGET"
 	hDelCommand         = "HDEL"
 	hKeysCommand        = "HKEYS"
+	scanCommand         = "SCAN"
+	hScanCommand        = "HSCAN"
 	appendCommand       = "APPEND"
 	getRangeCommand     = "GETRANGE"
 	setRangeCommand     = "SETRANGE"
@@ -107,6 +111,18 @@ func (c *Client) Info() (string, error) {
 	defer connection.Close()
 
 	return redis.String(connection.Do(infoCommand))
+}
+
+// Scan incrementally iterate over keys
+func (c *Client) Scan(startIndex int64, pattern string) (int64, []string, error) {
+	connection := c.getWriteConnection()
+	defer connection.Close()
+
+	results, err := redis.Values(connection.Do(scanCommand, startIndex, matchOption, pattern))
+	if err != nil {
+		return 0, nil, err
+	}
+	return parseScanResults(results)
 }
 
 // Append to a key's value
@@ -243,6 +259,18 @@ func (c *Client) DecrByFloat(key string, decrement float64) (float64, error) {
 	return c.IncrByFloat(key, -decrement)
 }
 
+// HScan incrementally iterate over key's fields and values
+func (c *Client) HScan(key string, startIndex int64, pattern string) (int64, []string, error) {
+	connection := c.getWriteConnection()
+	defer connection.Close()
+
+	results, err := redis.Values(connection.Do(hScanCommand, key, startIndex, matchOption, pattern))
+	if err != nil {
+		return 0, nil, err
+	}
+	return parseScanResults(results)
+}
+
 // HSet sets a key's field/value pair
 func (c *Client) HSet(key string, field string, value string) (bool, error) {
 	connection := c.getWriteConnection()
@@ -281,18 +309,7 @@ func (c *Client) HGetAll(key string) (map[string]string, error) {
 	connection := c.getReadConnection()
 	defer connection.Close()
 
-	results, err := redis.Strings(connection.Do(hGetAllCommand, key))
-	if err != nil {
-		return nil, err
-	}
-
-	resultsMap := make(map[string]string)
-	for i := 0; i < len(results); i = i + 2 {
-		key := results[i]
-		value := results[i+1]
-		resultsMap[key] = value
-	}
-	return resultsMap, err
+	return redis.StringMap(connection.Do(hGetAllCommand, key))
 }
 
 // HDel deletes a key's fields
@@ -381,4 +398,22 @@ func toString(reply interface{}, err error) (string, bool, error) {
 		return result, false, e
 	}
 	return result, true, nil
+}
+
+func parseScanResults(results []interface{}) (int64, []string, error) {
+	if len(results) != 2 {
+		return 0, []string{}, nil
+	}
+
+	cursorIndex, err := strconv.ParseInt(string(results[0].([]byte)), 10, 64)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	keyInterfaces := results[1].([]interface{})
+	keys := make([]string, len(keyInterfaces))
+	for index, keyInterface := range keyInterfaces {
+		keys[index] = string(keyInterface.([]byte))
+	}
+	return cursorIndex, keys, nil
 }

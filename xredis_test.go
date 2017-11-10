@@ -228,6 +228,19 @@ func TestClient_Keys(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestClient_Scan(t *testing.T) {
+	connection := redigomock.NewConn()
+
+	connection.Command("SCAN", int64(0), "MATCH", "key").Expect([]interface{}{[]byte("10"), []interface{}{[]byte("key")}})
+	client := mockClient(connection)
+
+	index, results, err := client.Scan(0, "key")
+	assert.Equal(t, index, int64(10))
+	assert.Equal(t, len(results), 1)
+	assert.Equal(t, results[0], "key")
+	assert.Nil(t, err)
+}
+
 func TestClient_Exists(t *testing.T) {
 	connection := redigomock.NewConn()
 
@@ -381,6 +394,19 @@ func TestClient_HKeys(t *testing.T) {
 	client := mockClient(connection)
 
 	results, err := client.HKeys("key")
+	assert.Equal(t, len(results), 1)
+	assert.Equal(t, results[0], "key")
+	assert.Nil(t, err)
+}
+
+func TestClient_HScan(t *testing.T) {
+	connection := redigomock.NewConn()
+
+	connection.Command("HSCAN", "name", int64(0), "MATCH", "key").Expect([]interface{}{[]byte("10"), []interface{}{[]byte("key")}})
+	client := mockClient(connection)
+
+	index, results, err := client.HScan("name", 0, "key")
+	assert.Equal(t, index, int64(10))
 	assert.Equal(t, len(results), 1)
 	assert.Equal(t, results[0], "key")
 	assert.Nil(t, err)
