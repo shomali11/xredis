@@ -2,6 +2,7 @@ package xredis
 
 import (
 	"crypto/tls"
+	"errors"
 	"github.com/FZambia/go-sentinel"
 	"github.com/garyburd/redigo/redis"
 	"math/rand"
@@ -9,6 +10,9 @@ import (
 )
 
 const (
+	masterRole           = "master"
+	masterRoleCheckError = "master role check failed"
+
 	defaultSentinelAddress               = "localhost:26379"
 	defaultSentinelMasterName            = "master"
 	defaultSentinelPassword              = ""
@@ -165,7 +169,7 @@ func newWriteSentinelPool(options *SentinelOptions) *redis.Pool {
 		MaxIdle:      connectionMaxIdle,
 		Wait:         connectionWait,
 		Dial:         sentinelWriteDial(options),
-		TestOnBorrow: sentinelTestOnBorrow(options),
+		TestOnBorrow: sentinelMasterTestOnBorrow(options),
 	}
 }
 
@@ -279,6 +283,23 @@ func sentinelTestOnBorrow(options *SentinelOptions) func(redis.Conn, time.Time) 
 	period := options.GetTestOnBorrowPeriod()
 
 	return func(connection redis.Conn, t time.Time) error {
+		if time.Since(t) < period {
+			return nil
+		}
+
+		_, err := connection.Do(pingCommand)
+		return err
+	}
+}
+
+func sentinelMasterTestOnBorrow(options *SentinelOptions) func(redis.Conn, time.Time) error {
+	period := options.GetTestOnBorrowPeriod()
+
+	return func(connection redis.Conn, t time.Time) error {
+		if !sentinel.TestRole(connection, masterRole) {
+			return errors.New(masterRoleCheckError)
+		}
+
 		if time.Since(t) < period {
 			return nil
 		}
