@@ -38,7 +38,7 @@
 //
 //  n, err := conn.Do("APPEND", "key", "value")
 //
-// The Do method converts command arguments to binary strings for transmission
+// The Do method converts command arguments to bulk strings for transmission
 // to the server as follows:
 //
 //  Go Type                 Conversion
@@ -48,7 +48,7 @@
 //  float64                 strconv.FormatFloat(v, 'g', -1, 64)
 //  bool                    true -> "1", false -> "0"
 //  nil                     ""
-//  all other types         fmt.Print(v)
+//  all other types         fmt.Fprint(w, v)
 //
 // Redis command reply types are represented using the following Go types:
 //
@@ -64,23 +64,23 @@
 //
 // Pipelining
 //
-// Connections support pipelining using the Send, FlushDb and Receive methods.
+// Connections support pipelining using the Send, Flush and Receive methods.
 //
 //  Send(commandName string, args ...interface{}) error
-//  FlushDb() error
+//  Flush() error
 //  Receive() (reply interface{}, err error)
 //
-// Send writes the command to the connection's output buffer. FlushDb flushes the
+// Send writes the command to the connection's output buffer. Flush flushes the
 // connection's output buffer to the server. Receive reads a single reply from
 // the server. The following example shows a simple pipeline.
 //
 //  c.Send("SET", "foo", "bar")
 //  c.Send("GET", "foo")
-//  c.FlushDb()
+//  c.Flush()
 //  c.Receive() // reply from SET
 //  v, err = c.Receive() // reply from GET
 //
-// The Do method combines the functionality of the Send, FlushDb and Receive
+// The Do method combines the functionality of the Send, Flush and Receive
 // methods. The Do method starts by writing the command and flushing the output
 // buffer. Next, the Do method receives all pending replies including the reply
 // for the command just sent by Do. If any of the received replies is an error,
@@ -100,7 +100,7 @@
 // Concurrency
 //
 // Connections support one concurrent caller to the Receive method and one
-// concurrent caller to the Send and FlushDb methods. No other concurrency is
+// concurrent caller to the Send and Flush methods. No other concurrency is
 // supported including concurrent calls to the Do method.
 //
 // For full concurrent access to Redis, use the thread-safe Pool to get, use
@@ -110,10 +110,10 @@
 //
 // Publish and Subscribe
 //
-// Use the Send, FlushDb and Receive methods to implement Pub/Sub subscribers.
+// Use the Send, Flush and Receive methods to implement Pub/Sub subscribers.
 //
 //  c.Send("SUBSCRIBE", "example")
-//  c.FlushDb()
+//  c.Flush()
 //  for {
 //      reply, err := c.Receive()
 //      if err != nil {

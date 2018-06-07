@@ -22,14 +22,6 @@ Built on top of [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
     * _More coming soon_
 * Full access to Redigo's API [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
 
-## Usage
-
-Using `govendor` [github.com/kardianos/govendor](https://github.com/kardianos/govendor):
-
-```
-govendor fetch github.com/shomali11/xredis
-```
-
 ## Dependencies
 
 * `redigo` [github.com/garyburd/redigo](https://github.com/garyburd/redigo)
