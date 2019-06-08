@@ -1,4 +1,4 @@
-# xredis [![Go Report Card](https://goreportcard.com/badge/github.com/shomali11/xredis)](https://goreportcard.com/report/github.com/shomali11/xredis) [![GoDoc](https://godoc.org/github.com/shomali11/xredis?status.svg)](https://godoc.org/github.com/shomali11/xredis) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+# xredis [![Build Status](https://travis-ci.com/shomali11/xredis.svg?branch=master)](https://travis-ci.com/shomali11/xredis) [![Go Report Card](https://goreportcard.com/badge/github.com/shomali11/xredis)](https://goreportcard.com/report/github.com/shomali11/xredis) [![GoDoc](https://godoc.org/github.com/shomali11/xredis?status.svg)](https://godoc.org/github.com/shomali11/xredis) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Built on top of [github.com/garyburd/redigo](https://github.com/garyburd/redigo) with the idea to simplify creating a Redis client, provide type safe calls and encapsulate the low level details to easily integrate with Redis.
 
